@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cockroachdb-scripts
+data:
+  user-schema-bootstrap.sh: |
+    #!/bin/bash
+    set -e
+
+    if [ -z "$DB_USER" ]; then
+        echo "DB_USER envvar is not set"
+        exit 1
+    fi
+
+    if [ -z "$DB_NAME" ]; then
+        echo "DB_NAME envvar not set"
+        exit 1
+    fi
+
+    SQL_CMD="/cockroach/cockroach -d system sql" > /dev/null
+
+    $SQL_CMD << EOF
+      CREATE USER IF NOT EXISTS $DB_USER;
+      CREATE DATABASE IF NOT EXISTS $DB_NAME;
+      GRANT ALL ON DATABASE $DB_NAME TO $DB_USER;
+    EOF

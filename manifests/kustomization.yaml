@@ -9,3 +9,5 @@ resources:
 - statefulset.yaml
 - budget.yaml
 - init-job.yaml
+- backup.yaml
+- scripts.yaml

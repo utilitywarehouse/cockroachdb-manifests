@@ -1,0 +1,169 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cockroachdb-backup
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: cockroachdb-backup
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /__/metrics
+        prometheus.io/port: "8081"
+      name: cockroachdb-backup
+      labels:
+        app: cockroachdb-backup
+    spec:
+      serviceAccountName: cockroachdb
+      shareProcessNamespace: true
+      terminationGracePeriodSeconds: 60
+      imagePullSecrets:
+      - name: docker-registry-key
+      initContainers:
+      - name: init-certs
+        image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+        imagePullPolicy: Always
+        command: ["cockroach-certs"]
+        env:
+        - name: CERTIFICATE_TYPE
+          value: "client"
+        - name: USER
+          value: "root"
+        - name: CERTS_DIR
+          value: "/certs"
+        - name: CA_PROFILE
+          valueFrom:
+            configMapKeyRef:
+              name: ca.config
+              key: ca.node.profile
+        - name: CA_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: ca.config
+              key: ca.endpoint
+        - name: CA_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ca.auth
+              key: key
+        volumeMounts:
+        - name: client-certs
+          mountPath: /certs
+      containers:
+      - name: cockroachdb-backup
+        image: registry.uw.systems/db-backup:latest
+        imagePullPolicy: Always
+        command: ["/db-backup", "cron"]
+        env:
+        - name: DRIVER
+          value: "aws"
+        - name: BACKUP_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: cockroach.backup.aws
+              key: bucket
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: cockroach.backup.aws
+              key: region
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: cockroach.backup.aws
+              key: access.key.id
+        - name : AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cockroach.backup.aws
+              key: access.key.secret
+        - name: FILTER_DBS
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: filter.dbs
+        - name: RETRIES
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: retries
+        - name: SCHEDULE
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: schedule
+        - name: DBCLI_FLAGS
+          value: "--certs-dir=certs"
+        - name: DBCLI_DSN
+          value: "root@cockroachdb-proxy:26257/system?sslmode=verify-full&sslcert=/certs/client.root.crt&sslkey=/certs/client.root.key&sslrootcert=/certs/ca.crt"
+        livenessProbe:
+          httpGet:
+            path: /__/ready
+            port: 8081
+          initialDelaySeconds: 10
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /__/ready
+            port: 8081
+          initialDelaySeconds: 10
+          timeoutSeconds: 10
+        resources:
+          requests:
+            cpu: 200m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 1000Mi
+        volumeMounts:
+        - name: client-certs
+          mountPath: /certs
+      - name: certs-refresh
+        image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+        imagePullPolicy: Always
+        command: ["cockroach-certs", "refresh"]
+        env:
+        - name: EXTRA_TIME
+          value: "60m"
+        - name: MAX_RANDOM_SLEEP
+          value: "15m"
+        - name: SIGNAL
+          value: "SIGTERM"
+        - name: TARGET_PROC_COMMAND
+          value: "db-backup" # this can behave weirdly due to the bug in the go-ps library https://github.com/mitchellh/go-ps/issues/15
+        - name: CERTIFICATE_TYPE
+          value: "client"
+        - name: USER
+          value: "root"
+        - name: CERTS_DIR
+          value: "/certs"
+        - name: CA_PROFILE
+          valueFrom:
+            configMapKeyRef:
+              name: ca.config
+              key: ca.node.profile
+        - name: CA_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: ca.config
+              key: ca.endpoint
+        - name: CA_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ca.auth
+              key: key
+        volumeMounts:
+        - name: client-certs
+          mountPath: /certs
+        securityContext:
+          capabilities:
+            add:
+            - SYS_PTRACE
+      volumes:
+      - name: client-certs
+        emptyDir: {}

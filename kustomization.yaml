@@ -6,10 +6,14 @@ namespace: partner-platform
 secretGenerator:
   - name: ca.auth
     env: example-ca-auth-key
+  - name: cockroach.backup.aws
+    env: example-backup-aws
 
 configMapGenerator:
   - name: ca.config
     env: example-ca-config
+  - name: cockroach.backup.config
+    env: example-backup-config
 
 bases:
   - manifests
