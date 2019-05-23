@@ -1,0 +1,194 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cockroachdb
+  labels:
+    app: cockroachdb
+spec:
+  serviceName: "cockroachdb"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cockroachdb
+  template:
+    metadata:
+      labels:
+        app: cockroachdb
+    spec:
+      serviceAccountName: cockroachdb
+      shareProcessNamespace: true
+      # No pre-stop hook is required, a SIGTERM plus some time is all that's
+      # needed for graceful shutdown of a node.
+      terminationGracePeriodSeconds: 60
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - cockroachdb
+                topologyKey: kubernetes.io/hostname
+      initContainers:
+        - name: init-certs
+          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          imagePullPolicy: Always
+          command:
+            - "sh"
+            - "-c"
+            - >
+              cockroach-certs
+              --host=localhost
+              --host=127.0.0.1
+              --host=$(hostname -f)
+              --host=$(hostname -f|cut -f 1-2 -d '.')
+              --host=cockroachdb-proxy
+              --host=cockroachdb-proxy.$(hostname -f|cut -f 3- -d '.')
+          env:
+            - name: CERTIFICATE_TYPE
+              value: "node"
+            - name: CERTS_DIR
+              value: "/cockroach-certs"
+            - name: CA_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.node.profile
+            - name: CA_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.endpoint
+            - name: CA_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ca.auth
+                  key: key
+          volumeMounts:
+            - name: certs
+              mountPath: /cockroach-certs
+      containers:
+        - name: cockroachdb
+          image: cockroachdb/cockroach:v19.1.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/bash"
+            - "-ecx"
+            # The use of qualified `hostname -f` is crucial:
+            # Other nodes aren't able to look up the unqualified hostname.
+            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb --cache 25% --max-sql-memory 25%"
+          env:
+            - name: COCKROACH_CHANNEL
+              value: kubernetes-secure
+          ports:
+            - containerPort: 26257
+              name: grpc
+            - containerPort: 8080
+              name: http
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: http
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: "/health?ready=1"
+              port: http
+              scheme: HTTPS
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 2
+          volumeMounts:
+            - name: datadir
+              mountPath: /cockroach/cockroach-data
+            - name: certs
+              mountPath: /cockroach/cockroach-certs
+          resources:
+            requests:
+              memory: "2G"
+            limits:
+              memory: "2G"
+        - name: certs-refresh
+          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          imagePullPolicy: Always
+          command:
+            - "sh"
+            - "-c"
+            - >
+              cockroach-certs
+              --host=localhost
+              --host=127.0.0.1
+              --host=$(hostname -f)
+              --host=$(hostname -f|cut -f 1-2 -d '.')
+              --host=cockroachdb-proxy
+              --host=cockroachdb-proxy.$(hostname -f|cut -f 3- -d '.')
+              refresh-and-forward
+          env:
+            - name: HTTP_PORT
+              value: "8000"
+            - name: FORWARD_HOST
+              value: "localhost:8080"
+            - name: FORWARD_TIMEOUT
+              value: "4s"
+            - name: EXTRA_TIME
+              value: "60m"
+            - name: CERTIFICATE_TYPE
+              value: "node"
+            - name: CERTS_DIR
+              value: "/cockroach-certs"
+            - name: CA_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.node.profile
+            - name: CA_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.endpoint
+            - name: CA_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ca.auth
+                  key: key
+          volumeMounts:
+            - name: certs
+              mountPath: /cockroach-certs
+          securityContext:
+            capabilities:
+              add:
+                - SYS_PTRACE
+          ports:
+            - containerPort: 8000
+              name: http
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 40
+            periodSeconds: 30
+      volumes:
+        - name: datadir
+          persistentVolumeClaim:
+            claimName: datadir
+        - name: certs
+          emptyDir: {}
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        storageClassName: ebs-gp2
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 100Gi

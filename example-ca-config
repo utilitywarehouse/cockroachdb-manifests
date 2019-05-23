@@ -1,0 +1,3 @@
+ca.node.profile=server
+ca.client.profile=client
+ca.endpoint=certificate-authority:8080

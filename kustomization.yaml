@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: partner-platform
+
+secretGenerator:
+  - name: ca.auth
+    env: example-ca-auth-key
+
+configMapGenerator:
+  - name: ca.config
+    env: example-ca-config
+
+bases:
+  - manifests

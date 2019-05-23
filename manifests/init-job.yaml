@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-init
+  labels:
+    app: cockroachdb
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: init-certs
+        image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+        imagePullPolicy: Always
+        command: ["cockroach-certs"]
+        env:
+        - name: CERTIFICATE_TYPE
+          value: "client"
+        - name: USER
+          value: "root"
+        - name: CERTS_DIR
+          value: "/cockroach-certs"
+        - name: CA_PROFILE
+          valueFrom:
+            configMapKeyRef:
+              name: ca.config
+              key: ca.client.profile
+        - name: CA_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: ca.config
+              key: ca.endpoint
+        - name: CA_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ca.auth
+              key: key
+        volumeMounts:
+        - name: client-certs
+          mountPath: /cockroach-certs
+      containers:
+      - name: cluster-init
+        image: cockroachdb/cockroach:v19.1.0
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: client-certs
+          mountPath: /cockroach-certs
+        command:
+        - "/cockroach/cockroach"
+        - "init"
+        - "--certs-dir=/cockroach-certs"
+        - "--host=cockroachdb-0.cockroachdb"
+      restartPolicy: OnFailure
+      volumes:
+      - name: client-certs
+        emptyDir: {}
