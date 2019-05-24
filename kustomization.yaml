@@ -16,4 +16,4 @@ configMapGenerator:
     env: example-backup-config
 
 bases:
-  - manifests
+  - base
