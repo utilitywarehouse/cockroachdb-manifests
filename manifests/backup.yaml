@@ -101,6 +101,12 @@ spec:
           value: "--certs-dir=certs"
         - name: DBCLI_DSN
           value: "root@cockroachdb-proxy:26257/system?sslmode=verify-full&sslcert=/certs/client.root.crt&sslkey=/certs/client.root.key&sslrootcert=/certs/ca.crt"
+        - name: COCKROACH_HOST
+          value: "cockroachdb-proxy"
+        - name: COCKROACH_PORT
+          value: "26257"
+        - name: COCKROACH_CERTS_DIR
+          value: "/certs"
         livenessProbe:
           httpGet:
             path: /__/ready
