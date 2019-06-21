@@ -82,11 +82,6 @@ spec:
             secretKeyRef:
               name: cockroach.backup.aws
               key: access.key.secret
-        - name: FILTER_DBS
-          valueFrom:
-            configMapKeyRef:
-              name: cockroach.backup.config
-              key: filter.dbs
         - name: RETRIES
           valueFrom:
             configMapKeyRef:
