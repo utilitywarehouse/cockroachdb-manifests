@@ -72,7 +72,7 @@ spec:
               mountPath: /cockroach-certs
       containers:
         - name: cockroachdb
-          image: cockroachdb/cockroach:v19.1.0
+          image: cockroachdb/cockroach:v19.1.2
           imagePullPolicy: IfNotPresent
           command:
             - "/bin/bash"
