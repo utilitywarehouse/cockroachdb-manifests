@@ -79,7 +79,7 @@ spec:
             - "-ecx"
             # The use of qualified `hostname -f` is crucial:
             # Other nodes aren't able to look up the unqualified hostname.
-            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb --cache 25% --max-sql-memory 25%"
+            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb --cache 256MB --max-sql-memory 256MB"
           env:
             - name: COCKROACH_CHANNEL
               value: kubernetes-secure
@@ -110,9 +110,9 @@ spec:
               mountPath: /cockroach/cockroach-certs
           resources:
             requests:
-              memory: "2G"
+              memory: "512Mi"
             limits:
-              memory: "2G"
+              memory: "1Gi"
         - name: certs-refresh
           image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
           imagePullPolicy: Always
