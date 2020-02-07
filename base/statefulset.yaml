@@ -83,6 +83,8 @@ spec:
           env:
             - name: COCKROACH_CHANNEL
               value: kubernetes-secure
+            - name: COCKROACH_SKIP_ENABLING_DIAGNOSTIC_REPORTING
+              value: "true"
           ports:
             - containerPort: 26257
               name: grpc
