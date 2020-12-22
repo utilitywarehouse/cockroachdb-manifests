@@ -24,3 +24,31 @@ data:
       CREATE DATABASE IF NOT EXISTS $DB_NAME;
       GRANT ALL ON DATABASE $DB_NAME TO $DB_USER;
     EOF
+
+  backup-bootstrap.sh: |
+    #!/bin/bash
+    set -e
+
+    if [ -z "$BACKUP_SCHEDULE" ]; then
+        echo "BACKUP_SCHEDULE envvar is not set"
+        exit 1
+    fi
+
+    if [ -z "$BACKUP_DESTINATION_URL" ]; then
+        echo "BACKUP_DESTINATION_URL envvar is not set"
+        exit 1
+    fi
+
+    SQL_CMD="/cockroach/cockroach sql" > /dev/null
+
+    $SQL_CMD << EOF
+      BEGIN;
+      -- clear any existing schedules
+      DROP SCHEDULES SELECT id FROM [SHOW SCHEDULES] WHERE label = 'cluster_backup';
+      -- create a new schedule
+      CREATE SCHEDULE cluster_backup
+        FOR BACKUP INTO '$BACKUP_DESTINATION_URL'
+          RECURRING '$BACKUP_SCHEDULE'
+          FULL BACKUP ALWAYS;
+      COMMIT;
+    EOF

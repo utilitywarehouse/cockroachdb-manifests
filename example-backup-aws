@@ -1,4 +1,0 @@
-bucket=backup_bucket
-region=eu-west-1
-access.key.id=123456789
-access.key.secret=123456789

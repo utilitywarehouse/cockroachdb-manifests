@@ -1,3 +1,2 @@
-filter.dbs=
-retries=3
-schedule=0 0 0-23/12 * * *
+schedule=0 0,12 * * *
+destination.url=

@@ -6,5 +6,5 @@ resources:
 - statefulset.yaml
 - budget.yaml
 - init-job.yaml
-- backup.yaml
+- backup-init-job.yaml
 - scripts.yaml
