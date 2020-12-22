@@ -1,10 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: cockroach-init
-  labels:
-    app: cockroachdb
+  name: cockroach-backup-init
 spec:
+  backoffLimit: 10
   template:
     spec:
       initContainers:
@@ -38,18 +37,45 @@ spec:
         - name: client-certs
           mountPath: /cockroach-certs
       containers:
-      - name: cluster-init
+      - name: backup-init
         image: cockroachdb/cockroach:v20.2.3
         imagePullPolicy: IfNotPresent
+        command:
+        - "/bin/bash"
+        - "/opt/scripts/backup-bootstrap.sh"
+        env:
+        - name: COCKROACH_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach
+              key: cockroach.host
+        - name: COCKROACH_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach
+              key: cockroach.port
+        - name: COCKROACH_CERTS_DIR
+          value: "/cockroach-certs/"
+        - name: BACKUP_SCHEDULE
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: schedule
+        - name: BACKUP_DESTINATION_URL
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: destination.url
         volumeMounts:
         - name: client-certs
           mountPath: /cockroach-certs
-        command:
-        - "/cockroach/cockroach"
-        - "init"
-        - "--certs-dir=/cockroach-certs"
-        - "--host=cockroachdb-0.cockroachdb"
+        - name: cockroachdb-scripts
+          mountPath: /opt/scripts
+          readOnly: true
       restartPolicy: OnFailure
       volumes:
       - name: client-certs
         emptyDir: {}
+      - name: cockroachdb-scripts
+        configMap:
+          name: cockroachdb-scripts

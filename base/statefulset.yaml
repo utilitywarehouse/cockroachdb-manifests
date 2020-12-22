@@ -72,7 +72,7 @@ spec:
               mountPath: /cockroach-certs
       containers:
         - name: cockroachdb
-          image: cockroachdb/cockroach:v19.2.0
+          image: cockroachdb/cockroach:v20.2.3
           imagePullPolicy: IfNotPresent
           command:
             - "/bin/bash"
@@ -132,7 +132,7 @@ spec:
               refresh-and-forward
           env:
             - name: HTTP_PORT
-              value: "8000"
+              value: "8001"
             - name: FORWARD_HOST
               value: "localhost:8080"
             - name: FORWARD_TIMEOUT
@@ -166,7 +166,7 @@ spec:
               add:
                 - SYS_PTRACE
           ports:
-            - containerPort: 8000
+            - containerPort: 8001
               name: http
           livenessProbe:
             httpGet:
