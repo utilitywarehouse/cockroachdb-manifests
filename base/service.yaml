@@ -14,8 +14,8 @@ spec:
     targetPort: 26257
     name: grpc
   # The secondary port serves the UI as well as health and debug endpoints.
-  - port: 8000
-    targetPort: 8000
+  - port: 8001
+    targetPort: 8001
     name: http
   selector:
     app: cockroachdb
@@ -39,15 +39,15 @@ metadata:
     # Enable automatic monitoring of all instances when Prometheus is running in the cluster.
     prometheus.io/scrape: "true"
     prometheus.io/path: "_status/vars"
-    prometheus.io/port: "8000"
+    prometheus.io/port: "8001"
     uw.health.aggregator.enable: "false"
 spec:
   ports:
   - port: 26257
     targetPort: 26257
     name: grpc
-  - port: 8000
-    targetPort: 8000
+  - port: 8001
+    targetPort: 8001
     name: http
   # We want all pods in the StatefulSet to have their addresses published for
   # the sake of the other CockroachDB pods even before they're ready, since they
