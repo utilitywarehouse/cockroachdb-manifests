@@ -49,6 +49,7 @@ data:
       CREATE SCHEDULE cluster_backup
         FOR BACKUP INTO '$BACKUP_DESTINATION_URL'
           RECURRING '$BACKUP_SCHEDULE'
-          FULL BACKUP ALWAYS;
+          FULL BACKUP ALWAYS
+          WITH SCHEDULE OPTIONS ignore_existing_backups;
       COMMIT;
     EOF
