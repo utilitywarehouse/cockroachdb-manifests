@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: &app cockroachdb-client
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: *app
+  template:
+    metadata:
+      name: *app
+      labels:
+        app: *app
+    spec:
+      serviceAccountName: cockroachdb
+      shareProcessNamespace: true
+      terminationGracePeriodSeconds: 60
+      initContainers:
+        - name: init-certs
+          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          command: ["cockroach-certs"]
+          env:
+            - name: CERTIFICATE_TYPE
+              value: "client"
+            - name: USER
+              value: "root"
+            - name: CERTS_DIR
+              value: "/cockroach-certs"
+            - name: CA_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.node.profile
+            - name: CA_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.endpoint
+            - name: CA_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ca.auth
+                  key: key
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach-certs
+      containers:
+        - name: cockroachdb-client
+          image: cockroachdb/cockroach:v20.2.3
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              sleep infinity & PID=$!
+              trap "kill $PID" TERM
+              wait
+              echo "shutting down..."
+          env:
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
+            - name: COCKROACH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.port
+            - name: COCKROACH_CERTS_DIR
+              value: "/cockroach-certs"
+          resources:
+            requests:
+              cpu: 0m
+              memory: 16Mi
+            limits:
+              cpu: 1000m
+              memory: 128Mi
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach-certs
+        - name: certs-refresh
+          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          command: ["cockroach-certs", "refresh"]
+          env:
+            - name: CERTIFICATE_TYPE
+              value: "client"
+            - name: USER
+              value: "root"
+            - name: CERTS_DIR
+              value: "/cockroach-certs"
+            - name: TARGET_PROC_COMMAND
+              value: ""
+            - name: CA_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.node.profile
+            - name: CA_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.endpoint
+            - name: CA_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ca.auth
+                  key: key
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach-certs
+          securityContext:
+            capabilities:
+              add:
+                - SYS_PTRACE
+      volumes:
+        - name: client-certs
+          emptyDir: { }
