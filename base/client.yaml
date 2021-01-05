@@ -13,8 +13,6 @@ spec:
       labels:
         app: *app
     spec:
-      serviceAccountName: cockroachdb
-      shareProcessNamespace: true
       terminationGracePeriodSeconds: 60
       initContainers:
         - name: init-certs
@@ -109,10 +107,6 @@ spec:
           volumeMounts:
             - name: client-certs
               mountPath: /cockroach-certs
-          securityContext:
-            capabilities:
-              add:
-                - SYS_PTRACE
       volumes:
         - name: client-certs
           emptyDir: { }
