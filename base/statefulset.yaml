@@ -34,7 +34,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       initContainers:
         - name: init-certs
-          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          image: cockroach-cfssl-certs
           imagePullPolicy: Always
           command:
             - "sh"
@@ -72,7 +72,7 @@ spec:
               mountPath: /cockroach-certs
       containers:
         - name: cockroachdb
-          image: cockroachdb/cockroach:v20.2.3
+          image: cockroachdb
           imagePullPolicy: IfNotPresent
           command:
             - "/bin/bash"
@@ -116,7 +116,7 @@ spec:
             limits:
               memory: "1Gi"
         - name: certs-refresh
-          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          image: cockroach-cfssl-certs
           imagePullPolicy: Always
           command:
             - "sh"
