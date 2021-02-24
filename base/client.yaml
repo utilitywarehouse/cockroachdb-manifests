@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 60
       initContainers:
         - name: init-certs
-          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          image: cockroach-cfssl-certs
           command: ["cockroach-certs"]
           env:
             - name: CERTIFICATE_TYPE
@@ -45,7 +45,7 @@ spec:
               mountPath: /cockroach-certs
       containers:
         - name: cockroachdb-client
-          image: cockroachdb/cockroach:v20.2.3
+          image: cockroachdb
           command:
             - "/bin/sh"
             - "-c"
@@ -78,7 +78,7 @@ spec:
             - name: client-certs
               mountPath: /cockroach-certs
         - name: certs-refresh
-          image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+          image: cockroach-cfssl-certs
           command: ["cockroach-certs", "refresh"]
           env:
             - name: CERTIFICATE_TYPE

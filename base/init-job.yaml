@@ -9,7 +9,7 @@ spec:
     spec:
       initContainers:
       - name: init-certs
-        image: quay.io/utilitywarehouse/cockroach-cfssl-certs:latest
+        image: cockroach-cfssl-certs
         imagePullPolicy: Always
         command: ["cockroach-certs"]
         env:
@@ -39,7 +39,7 @@ spec:
           mountPath: /cockroach-certs
       containers:
       - name: cluster-init
-        image: cockroachdb/cockroach:v20.2.3
+        image: cockroachdb
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: client-certs
