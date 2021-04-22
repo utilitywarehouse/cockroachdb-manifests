@@ -188,7 +188,6 @@ spec:
     - metadata:
         name: datadir
       spec:
-        storageClassName: ebs-gp2
         accessModes:
           - "ReadWriteOnce"
         resources:
