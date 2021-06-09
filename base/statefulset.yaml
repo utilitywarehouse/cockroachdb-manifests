@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         app: cockroachdb
+        policy.semaphore.uw.io/name: cockroachdb
     spec:
       serviceAccountName: cockroachdb
       shareProcessNamespace: true
