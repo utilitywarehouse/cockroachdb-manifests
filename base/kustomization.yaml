@@ -17,3 +17,8 @@ resources:
   - init-job.yaml
   - backup-init-job.yaml
   - scripts.yaml
+
+configMapGenerator:
+  - name: cockroach
+    envs:
+      - config/cockroach

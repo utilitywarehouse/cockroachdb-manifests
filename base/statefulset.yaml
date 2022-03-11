@@ -46,8 +46,8 @@ spec:
               --host=127.0.0.1
               --host=$(hostname -f)
               --host=$(hostname -f|cut -f 1-2 -d '.')
-              --host=cockroachdb-proxy
-              --host=cockroachdb-proxy.$(hostname -f|cut -f 3- -d '.')
+              --host=$(COCKROACH_HOST)
+              --host=$(COCKROACH_HOST).$(hostname -f|cut -f 3- -d '.')
           env:
             - name: CERTIFICATE_TYPE
               value: "node"
@@ -68,6 +68,11 @@ spec:
                 secretKeyRef:
                   name: ca.auth
                   key: key
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
           volumeMounts:
             - name: certs
               mountPath: /cockroach-certs
@@ -80,12 +85,17 @@ spec:
             - "-ecx"
             # The use of qualified `hostname -f` is crucial:
             # Other nodes aren't able to look up the unqualified hostname.
-            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb --cache 25% --max-sql-memory 25%"
+            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join $(COCKROACH_SEED_HOSTS) --cache 25% --max-sql-memory 25%"
           env:
             - name: COCKROACH_CHANNEL
               value: kubernetes-secure
             - name: COCKROACH_SKIP_ENABLING_DIAGNOSTIC_REPORTING
               value: "true"
+            - name: COCKROACH_SEED_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.seed.hosts
           ports:
             - containerPort: 26257
               name: grpc
@@ -128,8 +138,8 @@ spec:
               --host=127.0.0.1
               --host=$(hostname -f)
               --host=$(hostname -f|cut -f 1-2 -d '.')
-              --host=cockroachdb-proxy
-              --host=cockroachdb-proxy.$(hostname -f|cut -f 3- -d '.')
+              --host=$(COCKROACH_HOST)
+              --host=$(COCKROACH_HOST).$(hostname -f|cut -f 3- -d '.')
               refresh-and-forward
           env:
             - name: HTTP_PORT
@@ -159,6 +169,11 @@ spec:
                 secretKeyRef:
                   name: ca.auth
                   key: key
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
           volumeMounts:
             - name: certs
               mountPath: /cockroach-certs

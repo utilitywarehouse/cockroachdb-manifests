@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: &app cockroachdb-client
+  name: cockroachdb-client
 spec:
   replicas: 0
   selector:
     matchLabels:
-      app: *app
+      app: cockroachdb
   template:
     metadata:
-      name: *app
+      name: cockroachdb-client
       labels:
-        app: *app
+        app: cockroachdb
     spec:
       terminationGracePeriodSeconds: 60
       initContainers:

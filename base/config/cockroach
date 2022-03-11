@@ -1,0 +1,4 @@
+cockroach.host=cockroachdb-proxy
+cockroach.port=26257
+cockroach.seed.hosts=cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb
+cockroach.init.host=cockroachdb-0.cockroachdb
