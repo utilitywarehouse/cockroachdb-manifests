@@ -6,12 +6,12 @@ spec:
   replicas: 0
   selector:
     matchLabels:
-      app: cockroachdb
+      app: cockroachdb-client
   template:
     metadata:
       name: cockroachdb-client
       labels:
-        app: cockroachdb
+        app: cockroachdb-client
     spec:
       terminationGracePeriodSeconds: 60
       initContainers:
