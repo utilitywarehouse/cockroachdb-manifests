@@ -59,9 +59,9 @@ replicas:
     count: 1
 ```
 - The client deployment is useful for debugging issues and communicating with cockroach.
-- An example command for starting a shell is `kubectl exec -it cockroachdb-client -- cockroach sql`
+- An example command for starting a sql shell is `kubectl exec -it cockroachdb-client -- cockroach sql`
 
-### Admin UI
+### DB Console
 
 CockroachDB has a db console [user interface](https://www.cockroachlabs.com/docs/stable/ui-overview.html).
 To log into the db console you will require a database user.
