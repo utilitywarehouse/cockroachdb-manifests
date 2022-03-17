@@ -69,6 +69,8 @@ This can be achieved by:
 - Start a SQL shell using the client `kubectl exec -it cockroachdb-client -- cockroach sql`
   - You may need to change the replica count of the client (see above)
 - Create a user using SQL `CREATE USER foo WITH PASSWORD 'changeme';`
+- Assign admin role to the user with the SQL command `GRANT admin TO foo;`
+  - This allows full access within the UI.
 - Port forward any node `kubectl port-forward cockroachdb-0 8080`
 - Use a browser to navigate to https://localhost:8080.
 - It will warn you that the certificate is not trusted, this is expected. 
