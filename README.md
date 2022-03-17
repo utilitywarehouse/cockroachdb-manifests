@@ -1,6 +1,6 @@
 # cockroachdb-manifests
 
-This is a kustomization base for deploying cockroachdb to a kubernetes cluster. The base depends on Cloudflares
+This is a Kustomization base for deploying CockroachDB to a Kubernetes cluster. The base depends on Cloudflare's
 [cfssl](https://github.com/cloudflare/cfssl) as a Certificate Authority for signing certificates for
 securing communication between nodes and clients.
 
