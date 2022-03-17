@@ -66,8 +66,8 @@ replicas:
 CockroachDB has a DB console [user interface](https://www.cockroachlabs.com/docs/stable/ui-overview.html).
 To log into the DB console you will require a database user.
 This can be achieved by:
-- Shelling into the client container
-- Start a SQL session with `cockroach sql`
+- Start a SQL shell using the client `kubectl exec -it cockroachdb-client -- cockroach sql`
+  - You may need to change the replica count of the client (see above)
 - Create a user using SQL `CREATE USER foo WITH PASSWORD 'changeme';`
 - Port forward any node `kubectl port-forward cockroachdb-0 8080`
 - Use a browser to navigate to https://localhost:8080.
