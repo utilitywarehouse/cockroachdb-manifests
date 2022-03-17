@@ -6,7 +6,7 @@ securing communication between nodes and clients.
 
 #### CFSSL
 
-"CFSSL is CloudFlare's PKI/TLS swiss army knife". This base requires cfssl and depends on the api server
+"CFSSL is CloudFlare's PKI/TLS swiss army knife". This base requires cfssl and depends on the API server
 to sign certificates and retrieve the Certificate Authority it will trust. CFSSL provide a
 [docker container](https://hub.docker.com/r/cfssl/cfssl/) which can be deployed in kubernetes.
 
