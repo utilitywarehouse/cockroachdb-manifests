@@ -165,7 +165,7 @@ BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';
 This can be issued via the `cockroachdb-client` deployment using the following one-liner:
 
 ```
-kubectl --context=<cluster> --namespace=<namespace> exec deployments/cockroachdb-client -c cockroachdb-client -- cockroach sql --execute "BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';"
+$ kubectl --context=<cluster> --namespace=<namespace> exec deployments/cockroachdb-client -c cockroachdb-client -- cockroach sql --execute "BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';"
 ```
 
 ### Clear init and backup jobs
@@ -188,7 +188,7 @@ Note that the jobs will be recreated when the manifests are next applied - it is
 
 ## Upgrade
 
-The upgrade specific instructions are slightly different depending on the nature:
+The instructions are slightly different depending on the nature of the upgrade, so:
 
 - for patch version upgrades, jump to [`Option 1: patch version upgrade`](#option-1-patch-version-upgrade)
 - for major version upgrades, jump to [`Option 2: major version upgrade`](#option-2-major-version-upgrade)
@@ -263,7 +263,7 @@ SET CLUSTER SETTING cluster.preserve_downgrade_option = '21.1';
 To execute this via the `cockroachdb-client` deployment, the following one-liner can be used:
 
 ```
-kubectl --context=<cluster> --namespace=<namespace> exec deployments/cockroachdb-client -c cockroachdb-client -- cockroach sql --execute "SET CLUSTER SETTING cluster.preserve_downgrade_option = '21.1';"
+$ kubectl --context=<cluster> --namespace=<namespace> exec deployments/cockroachdb-client -c cockroachdb-client -- cockroach sql --execute "SET CLUSTER SETTING cluster.preserve_downgrade_option = '21.1';"
 ```
 
 At any point you wish to check what this value is set to, simply run:
