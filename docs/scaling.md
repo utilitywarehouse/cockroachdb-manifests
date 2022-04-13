@@ -155,6 +155,7 @@ set the replicas count to the target value via the kustomize
 @@ -201,5 +201,9 @@ resources:
    - 01-auth.yaml
    - 02-network-policies.yaml
+   - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v21.2.8-0
  
 +replicas:
 +  - name: cockroachdb
@@ -317,6 +318,7 @@ set the replicas count to the target value via the kustomize
 @@ -201,5 +201,9 @@ resources:
    - 01-auth.yaml
    - 02-network-policies.yaml
+   - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v21.2.8-0
  
 replicas:
   - name: cockroachdb
@@ -379,6 +381,7 @@ ranges. To re-add nodes in such circumstances, simply increase the replica count
 @@ -201,5 +201,9 @@ resources:
    - 01-auth.yaml
    - 02-network-policies.yaml
+   - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v21.2.8-0
  
 replicas:
   - name: cockroachdb
