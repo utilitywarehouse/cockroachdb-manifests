@@ -469,6 +469,6 @@ missing pod and underlying PVC, and provision them.
 
 ### Re-check cluster health
 
-Whether you're adding, removing, re-adding, or replacing nodes, you should always check on the cluster other making
-modifications. The same steps [taken before applying changes](#check-cluster-health) can be applied after - in 
-particular make sure there are no under-replicated ranges being reported.
+Whether you're adding, removing, re-adding, or replacing nodes, you should always check on the state of the cluster
+after making modifications. The same steps [taken before applying changes](#check-cluster-health) can be applied after -
+in particular make sure there are no under-replicated ranges being reported.
