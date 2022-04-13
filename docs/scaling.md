@@ -4,7 +4,7 @@ This runbook looks to document how to orchestrate adding, removing, re-adding, a
 specifically written with this kustomize base in mind, however many parts are agnostic to how CockroachDB is deployed.
 
 <!-- ToC start -->
-# Table of Contents
+## Table of Contents
 
    1. [Before applying changes](#before-applying-changes)
       1. [Check cluster health](#check-cluster-health)
