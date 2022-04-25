@@ -162,6 +162,8 @@ that is targeted by the scheduled backups:
 BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';
 ```
 
+You can find the path in the kubernetes-manifesto by searching for `destination.url` in the relevant namespace.
+
 This can be issued via the `cockroachdb-client` deployment using the following one-liner:
 
 ```
