@@ -151,12 +151,15 @@ a couple of reasons behind this:
 
 Assuming there are no problems flagged, continue on.
 
-### Create a manual backup
+### Create a manual backup (optional)
 
-Whilst no issues are expected from upgrading CockroachDB, it is diligent to create a backup before upgrading, _just in
-case_. CockroachDB clusters deployed against this kustomize base are expected to use the native backup mechanism, which
-makes it extremely simple and convenient to make ad-hoc backups. Simply use the same bucket and path (if applicable)
-that is targeted by the scheduled backups:
+When moving to a new major version, whilst no issues are expected from upgrading CockroachDB, it is diligent to create a
+backup before upgrading, _just in case_. If you're moving to a new patch version you may choose to omit this step,
+considering the even lesser likelihood of issues and the ease at which you can rollback.
+
+CockroachDB clusters deployed against this kustomize base are expected to use the native backup mechanism, which makes
+it trivial to make ad-hoc backups. Simply use the same bucket and path (if applicable) that is targeted by the scheduled
+backups:
 
 ```sql
 BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';
