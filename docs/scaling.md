@@ -277,8 +277,8 @@ id      address sql_address     build   started_at      updated_at      locality
 5       cockroachdb-3.cockroachdb.namespace.svc.cluster.local:26257       cockroachdb-3.cockroachdb.namespace.svc.cluster.local:26257       v21.1.12        2022-03-28 12:33:26.462544      2022-04-07 13:22:35.790106                true    true
 ```
 
-Sticking with the example where we're scaling from 5 to 3, we'd want to determine the node IDs for `cockroachdb-4` and
-`cockroachdb -4`. Based on the above output, the node ID for `cockroachdb-3` is 5, and the node ID for `cockroachdb-4`
+Sticking with the example where we're scaling from 5 to 3, we'd want to determine the node IDs for `cockroachdb-3` and
+`cockroachdb-4`. Based on the above output, the node ID for `cockroachdb-3` is 5, and the node ID for `cockroachdb-4`
 is 4. For the avoidance of any doubt: the numeric value on the end of each pods name and related hostname have zero
 bearing on the ID used by CockroachDB. Always locate the node ID via the DB console or `cockroach node status`.
 
