@@ -1,0 +1,13 @@
+site_name: 'Customer Support Account'
+
+nav:
+  - Home: index.md
+  - Scaling: scaling.md
+  - Upgrade: upgrade.md
+  - PVC Resize: pvc-resize.md
+  
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - admonition

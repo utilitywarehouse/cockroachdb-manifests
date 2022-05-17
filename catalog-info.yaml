@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cockroachdb-manifests
+  annotations:
+    github.com/project-slug: utilitywarehouse/cockroachdb-manifests
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: documentation
+  lifecycle: experimental
+  owner: customer-support
