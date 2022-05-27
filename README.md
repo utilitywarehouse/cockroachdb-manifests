@@ -12,9 +12,9 @@ to sign certificates and retrieve the Certificate Authority it will trust. CFSSL
 
 #### Certificates
 
-- The base relies on this [container](https://github.com/utilitywarehouse/docker-cockroach-cfssl-certs) it is used
-  as an init container to sign certificates on startup.
-  - The container relies on the CFSSL AuthSign endpoint and passes a CSR (Certificate Signature Request) and token.
+- The base relies on [docker-cockroach-cfssl-certs](https://github.com/utilitywarehouse/docker-cockroach-cfssl-certs).
+It is executed via an init container, acquiring certificates on pod start.
+- The container relies on the CFSSL AuthSign endpoint and passes a CSR (Certificate Signature Request) and token.
 - It uses the same container as a sidecar to refresh certificates when they are due to expire and sends a `SIGHUP` to the
   Cockroach process to inform it to reload the certificates see [docs](https://www.cockroachlabs.com/docs/stable/rotate-certificates.html)
 - To send a signal to a different container they require a shared process namespace,
