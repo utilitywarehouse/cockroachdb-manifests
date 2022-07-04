@@ -73,7 +73,7 @@ spec:
               memory: 16Mi
             limits:
               cpu: 1000m
-              memory: 128Mi
+              memory: 512Mi
           volumeMounts:
             - name: client-certs
               mountPath: /cockroach-certs
