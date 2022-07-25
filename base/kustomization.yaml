@@ -4,7 +4,7 @@ kind: Kustomization
 images:
   - name: cockroachdb
     newName: cockroachdb/cockroach
-    newTag: v22.1.3
+    newTag: v22.1.4
   - name: cockroach-cfssl-certs
     newName: quay.io/utilitywarehouse/cockroach-cfssl-certs
     newTag: latest
