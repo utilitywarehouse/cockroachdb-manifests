@@ -165,12 +165,12 @@ backups:
 BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';
 ```
 
-You can find the path in the kubernetes-manifesto by searching for `destination.url` in the relevant namespace.
+You can find the path in the kubernetes-manifest by searching for `destination.url` in the relevant namespace.
 
 This can be issued via the `cockroachdb-client` deployment using the following one-liner:
 
 ```
-$ kubectl --context=<cluster> --namespace=<namespace> exec deployments/cockroachdb-client -c cockroachdb-client -- cockroach sql --execute "BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit';"
+$ kubectl --context=<cluster> --namespace=<namespace> exec deployments/cockroachdb-client -c cockroachdb-client -- cockroach sql --execute "BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit' AS OF SYSTEM TIME '-10s';"
 ```
 
 ### Clear init and backup jobs
