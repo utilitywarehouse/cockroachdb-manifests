@@ -94,14 +94,14 @@ spec:
           livenessProbe:
             httpGet:
               path: "/health"
-              port: http
+              port: 8080
               scheme: HTTPS
             initialDelaySeconds: 30
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: "/health?ready=1"
-              port: http
+              port: 8080
               scheme: HTTPS
             initialDelaySeconds: 60
             periodSeconds: 5
@@ -172,7 +172,7 @@ spec:
           livenessProbe:
             httpGet:
               path: "/health"
-              port: http
+              port: 8080
               scheme: HTTP
             initialDelaySeconds: 40
             periodSeconds: 30
