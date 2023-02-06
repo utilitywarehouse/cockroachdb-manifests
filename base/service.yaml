@@ -8,12 +8,15 @@ metadata:
     app: cockroachdb
 spec:
   ports:
-  # The main port, served by gRPC, serves Postgres-flavor SQL, internode
-  # traffic and the cli.
+  # The main port, serves Postgres-flavor SQL, for clients
   - port: 26257
     targetPort: 26257
-    name: grpc
-  # The secondary port serves the UI as well as health and debug endpoints.
+    name: sql
+  # The port used for node-node RPC connections
+  - port: 26357
+    targetPort: 26357
+    name: rpc
+  # UI as well as health and debug endpoints
   - port: 8001
     targetPort: 8001
     name: http
@@ -40,7 +43,10 @@ spec:
   ports:
   - port: 26257
     targetPort: 26257
-    name: grpc
+    name: sql
+  - port: 26257
+    targetPort: 26357
+    name: rpc
   - port: 8001
     targetPort: 8001
     name: http
