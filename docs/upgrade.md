@@ -162,7 +162,7 @@ it trivial to make ad-hoc backups. Simply use the same bucket and path (if appli
 backups:
 
 ```sql
-BACKUP TO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit' AS OF SYSTEM TIME '-10s';
+BACKUP INTO 's3://<bucket>/<path>/ad-hoc-backup-YYYYMMDD-01/?AUTH=implicit' AS OF SYSTEM TIME '-10s';
 ```
 
 You can find the path in the kubernetes-manifest by searching for `destination.url` in the relevant namespace.
