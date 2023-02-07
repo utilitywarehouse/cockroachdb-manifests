@@ -80,7 +80,7 @@ spec:
             - "-ecx"
             # The use of qualified `hostname -f` is crucial:
             # Other nodes aren't able to look up the unqualified hostname.
-            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb --cache 25% --max-sql-memory 25%"
+            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --listen-addr=:26357 --sql-addr=:26257 --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb:26257,cockroachdb-0.cockroachdb:26357,cockroachdb-1.cockroachdb:26257,cockroachdb-1.cockroachdb:26357,cockroachdb-2.cockroachdb:26257,cockroachdb-2.cockroachdb:26357 --cache 25% --max-sql-memory 25%"
           env:
             - name: COCKROACH_CHANNEL
               value: kubernetes-secure
@@ -88,7 +88,9 @@ spec:
               value: "true"
           ports:
             - containerPort: 26257
-              name: grpc
+              name: sql
+            - containerPort: 26357
+              name: rpc
             - containerPort: 8080
               name: http
           livenessProbe:
