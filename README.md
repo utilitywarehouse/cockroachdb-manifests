@@ -23,7 +23,7 @@ It is executed via an init container, acquiring certificates on pod start.
 
 #### Generating Certificates
 
-To configure certificate authority you will need to generate a hex encoded access key, a self signed CA certificate and key for it and store these in kubernetes as secrets. To generate a certificate first create a json file with your configuration (changing the values as necessary):
+To configure the certificate authority you will need to generate a hex encoded access key, a self signed CA certificate and key for it and store these in kubernetes as secrets. To generate a certificate first create a json file with your configuration (changing the values as necessary):
 
 ``` json
 {
