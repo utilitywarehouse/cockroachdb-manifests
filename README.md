@@ -21,6 +21,30 @@ It is executed via an init container, acquiring certificates on pod start.
   see [docs](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/).
   - This will require configuring kubernetes to grant the `SYS_PTRACE` capability to the container.
 
+#### Generating Certificates
+
+To configure certificate authority you will need to generate a hex encoded access key, a self signed CA certificate and key for it and store these in kubernetes as secrets. To generate a certificate first create a json file with your configuration (changing the values as necessary):
+
+``` json
+{
+  "CN": "Utility Warehouse CA",
+  "key": {
+    "algo": "ecdsa",
+    "size": 521
+  },
+  "ca": {
+    "expiry": "17520h"
+  }
+}
+```
+
+then run the `cfssl` command to generate certificates, `cfssl gencert -initca <your-config-file>.json | cfssljson -bare ca`. The command will generate 3 files `ca.pem`, `ca-key.pem` and `ca.csr`. You will not need the `cs.csr` file to configure cockroach.
+
+finally you can generate a hex encoded access key with
+``` shell
+hexdump -n 16 -e '4/4 "%08X" 1 "\n"' /dev/random
+```
+
 ### Configuration
 The CA is configured by a config map. This specifies the cfssl certificate authority
 API endpoint and the profile used to sign client and peer certificates. These profiles must match the
