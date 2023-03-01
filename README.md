@@ -37,6 +37,7 @@ To configure the certificate authority you will need to generate a hex encoded a
   }
 }
 ```
+Note that this will expire in 2 years
 
 then run the `cfssl` command to generate certificates, `cfssl gencert -initca <your-config-file>.json | cfssljson -bare ca`. The command will generate 3 files `ca.pem`, `ca-key.pem` and `ca.csr`. You will not need the `cs.csr` file to configure cockroach.
 
@@ -44,6 +45,25 @@ finally you can generate a hex encoded access key with
 ``` shell
 hexdump -n 16 -e '4/4 "%08X" 1 "\n"' /dev/random
 ```
+
+##### Generate new certificate
+When CA certificate is about to expire you can generate new certificate using
+the same key by running the following command.
+
+`cfssl gencert -ca-key=ca-key.pem -initca ca-csr.json | cfssljson -bare ca`
+
+Here `ca-csr.json` is the same file as before and `ca-key.pem` is the old
+generated key. You can then delete the `ca-certs` secret and recreate it
+with the same command as before.
+
+Without requiring the `ca-csr.json`, you can renew the certificate with
+`cfssl gencert -renewca -ca ca-certs-ca.pem -ca-key ca-certs-ca-key.pem | cfssljson -bare ca`
+
+Once the secret is updated you should restart the pods of the CA service
+to make them use the new certificate. Afterwards, you should restart all 
+services that use certificates signed by this CA, so that they can fetch
+the new CA certificate. As we are using the same key the certificates signed
+by the CA will appear to be signed by both the old CA certificate and the new one.
 
 ### Configuration
 The CA is configured by a config map. This specifies the cfssl certificate authority
