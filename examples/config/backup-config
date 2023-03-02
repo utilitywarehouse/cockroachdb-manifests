@@ -1,0 +1,2 @@
+schedule=0 0,12 * * *
+destination.url=<your s3 bucket url here>
