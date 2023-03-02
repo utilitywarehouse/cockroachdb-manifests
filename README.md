@@ -4,25 +4,14 @@ This is a Kustomization base for deploying CockroachDB to a Kubernetes cluster. 
 [cfssl](https://github.com/cloudflare/cfssl) as a Certificate Authority for signing certificates for
 securing communication between nodes and clients.
 
-#### CFSSL
+## Deployment
 
-"CFSSL is CloudFlare's PKI/TLS swiss army knife". This base requires cfssl and depends on the API server
-to sign certificates and retrieve the Certificate Authority it will trust. CFSSL provide a
-[docker container](https://hub.docker.com/r/cfssl/cfssl/) which can be deployed in Kubernetes.
-
-#### Certificates
-
-- The base relies on [docker-cockroach-cfssl-certs](https://github.com/utilitywarehouse/docker-cockroach-cfssl-certs).
-It is executed via an init container, acquiring certificates on pod start.
-- The container relies on the CFSSL AuthSign endpoint and passes a CSR (Certificate Signature Request) and token.
-- It uses the same container as a sidecar to refresh certificates when they are due to expire and sends a `SIGHUP` to the
-  Cockroach process to inform it to reload the certificates see [docs](https://www.cockroachlabs.com/docs/stable/rotate-certificates.html)
-- To send a signal to a different container they require a shared process namespace,
-  see [docs](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/).
-  - This will require configuring kubernetes to grant the `SYS_PTRACE` capability to the container.
+To deploy a cockroachdb cluster in your namespace you will need to complete the following steps:
+1. Configure and Deploy a Certificate Authority by following the [readme](./CFSSL_README.md). This will secure access for your cockroach cluster and clients.
+2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples](./examples/) folder that can be used as a starting point.
 
 ### Configuration
-The CA is configured by a config map. This specifies the cfssl certificate authority
+The Certificate Authority is configured by a config map. This specifies the cfssl certificate authority
 API endpoint and the profile used to sign client and peer certificates. These profiles must match the
 cfssl configuration.
 Example:
@@ -38,14 +27,6 @@ Cockroach DB requires some base configuration that can be overridden. (An exampl
 cockroach.host=cockroachdb-proxy
 cockroach.port=26257
 ```
-You may want to overwrite the config if you patch the service name for example. This can be done as shown below:
-```yaml
-configMapGenerator:
-  - name: cockroach
-    envs:
-      - config/cockroach
-```
-
 ### Client
 
 - The base provides a client deployment that bootstraps the Cockroach sql command.
