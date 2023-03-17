@@ -43,10 +43,8 @@ data:
 
     $SQL_CMD << EOF
       BEGIN;
-      -- clear any existing schedules
-      DROP SCHEDULES SELECT id FROM [SHOW SCHEDULES] WHERE label = 'cluster_backup';
       -- create a new schedule
-      CREATE SCHEDULE cluster_backup
+      CREATE SCHEDULE IF NOT EXISTS cluster_backup
         FOR BACKUP INTO '$BACKUP_DESTINATION_URL'
           RECURRING '$BACKUP_SCHEDULE'
           FULL BACKUP ALWAYS
