@@ -35,12 +35,20 @@ Note that this will expire in 2 years
 
 then run the `cfssl` command to generate certificates, `cfssl gencert -initca <your-config-file>.json | cfssljson -bare ca`. The command will generate 3 files `ca.pem`, `ca-key.pem` and `ca.csr`. You will not need the `cs.csr` file to configure cockroach.
 
-finally you can generate a hex encoded access key with
+The contents of these files cannot be directly added to kubernetes as is, they first need to be converted to base64 using the following commands:
+
+```
+  openssl base64 -in ca.pem -out ca.base64
+  openssl base64 -in ca-key.pem -out ca-key.base64
+```
+
+Finally you can generate a hex encoded access key with
 ``` shell
 hexdump -n 16 -e '4/4 "%08X" 1 "\n"' /dev/random
 ```
 
 ### Generate new certificate
+
 When CA certificate is about to expire you can generate new certificate using
 the same key by running the following command.
 
