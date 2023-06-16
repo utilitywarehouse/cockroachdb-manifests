@@ -4,6 +4,10 @@ metadata:
   name: cockroachdb
   labels:
     app: cockroachdb
+  annotations:
+    "app.uw.systems/description": "Used to store data projections of events in multiple services."
+    "app.uw.systems/tier": "tier_1"
+    "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
 spec:
   serviceName: cockroachdb
   replicas: 3
