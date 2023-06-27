@@ -50,8 +50,8 @@ spec:
               --host=127.0.0.1
               --host=$(hostname -f)
               --host=$(hostname -f|cut -f 1-2 -d '.')
-              --host=cockroachdb-proxy
-              --host=cockroachdb-proxy.$(hostname -f|cut -f 3- -d '.')
+              --host=$(COCKROACH_HOST)
+              --host=$(COCKROACH_HOST).$(hostname -f|cut -f 3- -d '.')
           env:
             - name: CERTIFICATE_TYPE
               value: "node"
@@ -72,6 +72,11 @@ spec:
                 secretKeyRef:
                   name: ca.auth
                   key: key
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
           volumeMounts:
             - name: certs
               mountPath: /cockroach-certs
@@ -134,8 +139,8 @@ spec:
               --host=127.0.0.1
               --host=$(hostname -f)
               --host=$(hostname -f|cut -f 1-2 -d '.')
-              --host=cockroachdb-proxy
-              --host=cockroachdb-proxy.$(hostname -f|cut -f 3- -d '.')
+              --host=$(COCKROACH_HOST)
+              --host=$(COCKROACH_HOST).$(hostname -f|cut -f 3- -d '.')
               refresh-and-forward
           env:
             - name: HTTP_PORT
@@ -165,6 +170,11 @@ spec:
                 secretKeyRef:
                   name: ca.auth
                   key: key
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
           volumeMounts:
             - name: certs
               mountPath: /cockroach-certs
