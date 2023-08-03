@@ -52,7 +52,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: ca.config
-                  key: ca.clientCert.expiryHours
+                  key: ca.serverCert.expiryHours
           volumeMounts:
             - name: config
               mountPath: /config
