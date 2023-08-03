@@ -1,4 +1,4 @@
-ca.node.profile=server
+ca.node.profile=client-server
 ca.client.profile=client
 ca.endpoint=certificate-authority:8080
 ca.serverCert.expiryHours=24
