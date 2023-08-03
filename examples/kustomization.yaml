@@ -24,6 +24,7 @@ configMapGenerator:
       - config-template.json=config/certificate-authority-config-config-template.json
 resources:
   - certificate-authority.yaml
+  - sa.yaml
   - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v22.1.7-0
 
 patchesStrategicMerge:
