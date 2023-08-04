@@ -8,7 +8,7 @@ securing communication between nodes and clients.
 
 To deploy a cockroachdb cluster in your namespace you will need to complete the following steps:
 1. Configure and Deploy a Certificate Authority by following the [readme](./CFSSL_README.md). This will secure access for your cockroach cluster and clients.
-2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples](./examples/) folder that can be used as a starting point.
+2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples](./examples/) folder that can be used as a starting point. By filling in the missing pieces (e.g. certs, backup config, etc) you should get a running CA and CRDB cluster with periodic backups to S3 and AWS creds injected via [vault](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md) (assumes an existing vault setup).
 
 ### Configuration
 The Certificate Authority is configured by a config map. This specifies the cfssl certificate authority
@@ -31,7 +31,7 @@ cockroach.port=26257
 
 - The base provides a client deployment that bootstraps the Cockroach sql command.
 - The client deployment is useful for debugging issues and communicating with Cockroach.
-- An example command for starting a sql shell is `kubectl exec -it cockroachdb-client -- cockroach sql`
+- An example command for starting a sql shell is `kubectl exec -it deployment/cockroachdb-client -c cockroachdb-client -- cockroach sql`
 
 ### DB Console
 
