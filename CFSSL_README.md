@@ -14,6 +14,7 @@ It is executed via an init container, acquiring certificates on pod start.
 - To send a signal to a different container they require a shared process namespace,
   see [docs](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/).
   - This will require configuring kubernetes to grant the `SYS_PTRACE` capability to the container.
+  - See [this](https://github.com/utilitywarehouse/kubernetes-manifests/pull/75092) PR for example (yes, access is given per namespace).
 
 ### Generating Certificates
 

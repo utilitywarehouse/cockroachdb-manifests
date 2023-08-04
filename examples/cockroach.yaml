@@ -6,6 +6,7 @@ spec:
   template:
     metadata:
       annotations:
+        injector.tumblr.com/request: vault-sidecar-aws
     spec:
       containers:
         - name: cockroachdb
@@ -24,4 +25,4 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: 100Gi
+            storage: 50Gi
