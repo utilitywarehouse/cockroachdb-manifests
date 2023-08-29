@@ -33,6 +33,11 @@ cockroach.port=26257
 - The client deployment is useful for debugging issues and communicating with Cockroach.
 - An example command for starting a sql shell is `kubectl exec -it deployment/cockroachdb-client -c cockroachdb-client -- cockroach sql`
 
+### Admin UI
+
+In order to access admin UI, Port forward port 8080 on one of the cockroachdb- pods,
+then navigate to https://localhost:8080/
+
 ### DB Console
 
 CockroachDB has a DB console [user interface](https://www.cockroachlabs.com/docs/stable/ui-overview.html).
@@ -45,4 +50,10 @@ This can be achieved by:
   - This allows full access within the UI.
 - Port forward any node `kubectl port-forward cockroachdb-0 8080`
 - Use a browser to navigate to https://localhost:8080.
-- It will warn you that the certificate is not trusted, this is expected. 
+- It will warn you that the certificate is not trusted, this is expected.
+
+### Architecture
+We recommend creating one instance of CockroachDB cluster per namespace instead of creating new cluster instance
+for each of applications.
+Data can be separated by creating different databases, and having one, bigger cluster instead of multiple smaller ones
+reduces infrastructure costs and maintenance overhead.
