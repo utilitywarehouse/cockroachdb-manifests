@@ -25,7 +25,7 @@ configMapGenerator:
 resources:
   - certificate-authority.yaml
   - sa.yaml
-  - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v23.1.10-0
+  - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v23.1.10-1
 
 patchesStrategicMerge:
   - cockroach.yaml
