@@ -1,3 +1,2 @@
 cockroach.host=cockroachdb-proxy
 cockroach.port=26257
-cockroach.address=cockroachdb-proxy:26257
