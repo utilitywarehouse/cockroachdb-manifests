@@ -89,12 +89,26 @@ spec:
             - "-ecx"
             # The use of qualified `hostname -f` is crucial:
             # Other nodes aren't able to look up the unqualified hostname.
-            - "exec /cockroach/cockroach start --logtostderr=WARNING --certs-dir /cockroach/cockroach-certs --listen-addr=:26357 --sql-addr=:26257 --advertise-addr $(hostname -f) --http-addr 0.0.0.0 --join cockroachdb-0.cockroachdb:26257,cockroachdb-0.cockroachdb:26357,cockroachdb-1.cockroachdb:26257,cockroachdb-1.cockroachdb:26357,cockroachdb-2.cockroachdb:26257,cockroachdb-2.cockroachdb:26357 --cache 25% --max-sql-memory 25%"
+            - >
+              exec /cockroach/cockroach start
+              --logtostderr=WARNING
+              --certs-dir /cockroach/cockroach-certs
+              --listen-addr=:26357
+              --sql-addr=:26257
+              --advertise-addr $(hostname -f)
+              --http-addr 0.0.0.0
+              --join cockroachdb-0.cockroachdb:26257,cockroachdb-0.cockroachdb:26357,cockroachdb-1.cockroachdb:26257,cockroachdb-1.cockroachdb:26357,cockroachdb-2.cockroachdb:26257,cockroachdb-2.cockroachdb:26357
+              --cache $(CACHE)
+              --max-sql-memory $(MAX_SQL_MEMORY)
           env:
             - name: COCKROACH_CHANNEL
               value: kubernetes-secure
             - name: COCKROACH_SKIP_ENABLING_DIAGNOSTIC_REPORTING
               value: "true"
+            - name: CACHE
+              values: 256MB
+            - name: MAX_SQL_MEMORY
+              values: 256MB
           ports:
             - containerPort: 26257
               name: sql
@@ -124,8 +138,10 @@ spec:
               mountPath: /cockroach/cockroach-certs
           resources:
             requests:
-              memory: "512Mi"
+              cpu: "0m"
+              memory: "768Mi"
             limits:
+              cpu: "4000m"
               memory: "1Gi"
         - name: certs-refresh
           image: cockroach-cfssl-certs
