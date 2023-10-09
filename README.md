@@ -27,6 +27,10 @@ Cockroach DB requires some base configuration that can be overridden. (An exampl
 cockroach.host=cockroachdb-proxy
 cockroach.port=26257
 ```
+
+You can configure `--cache` and `--max-sql-memory` cockroachdb flags via
+following envvars: `CACHE` and `MAX_SQL_MEMORY`.
+
 ### Client
 
 - The base provides a client deployment that bootstraps the Cockroach sql command.
