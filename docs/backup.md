@@ -12,3 +12,15 @@ In order for the new backup schedule to get created in the db the backup job nee
 ## Restoring a backup
 
 The cockroach team have a complete example of restoring from a backup [here](https://www.cockroachlabs.com/docs/stable/restore.html)
+
+## Checking the backup ran
+
+CockroachDB exports various Prometheus metrics, including the state of backup jobs. You can use these to alert you to the fact that a backup may not have successfully run for a period of time. 
+
+`jobs_backup_resume_completed` is increased by the node that successfully coordinated the backup for that run, so to make sure you are looking at the backup status across the cluster you would typically write the following query, which assumes you have 1 cluster for the namespace:
+
+```
+sum by (kubernetes_namespace) (increase(jobs_backup_resume_completed{kubernetes_namespace=~"auth|auth-customer"}[14h])) == 0
+```
+
+While the backup job may have successfully run, that is not a full proof way of confirming you'll be able to restore it 😅
