@@ -28,6 +28,8 @@ cockroach.host=cockroachdb-proxy
 cockroach.port=26257
 ```
 
+#### CockroachDB
+
 You can configure `--cache` and `--max-sql-memory` cockroachdb flags via
 following envvars: `CACHE` and `MAX_SQL_MEMORY`.
 
