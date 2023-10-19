@@ -10,6 +10,18 @@ To deploy a cockroachdb cluster in your namespace you will need to complete the 
 1. Configure and Deploy a Certificate Authority by following the [readme](./CFSSL_README.md). This will secure access for your cockroach cluster and clients.
 2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples](./examples/) folder that can be used as a starting point. By filling in the missing pieces (e.g. certs, backup config, etc) you should get a running CA and CRDB cluster with periodic backups to S3 and AWS creds injected via [vault](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md) (assumes an existing vault setup).
 
+### Versioning
+
+This repo uses tags to manage versions, these tags have two components:
+
+  - The version of the `cockroachdb/cockroach` image the manifests are using
+  - An internal version to track changes to anything besides the version of
+    CockroachDB
+
+These tags are of the form `<cockroachdb-version>-<internal-version>`, for
+example: `v23.1.10-2` is the 2nd internal version of these manifests supporting
+`cockroachdb/cockroachv:23.1.10`
+
 ### Configuration
 The Certificate Authority is configured by a config map. This specifies the cfssl certificate authority
 API endpoint and the profile used to sign client and peer certificates. These profiles must match the
