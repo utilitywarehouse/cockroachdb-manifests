@@ -45,10 +45,13 @@ spec:
         volumeMounts:
         - name: client-certs
           mountPath: /cockroach-certs
+        env:
+        - name: COCKROACH_INIT_HOST
+          value: cockroachdb-0.cockroachdb
         command:
         - "/bin/bash"
         - "-c"
-        - "/cockroach/cockroach init --certs-dir=/cockroach-certs --host=cockroachdb-0.cockroachdb --port=26357 2>&1 | grep 'initialized'"
+        - "/cockroach/cockroach init --certs-dir=/cockroach-certs --host=$(COCKROACH_INIT_HOST) --port=26357 2>&1 | grep 'initialized'"
         resources:
           requests:
             cpu: 0
