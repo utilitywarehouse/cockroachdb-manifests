@@ -106,9 +106,9 @@ spec:
             - name: COCKROACH_SKIP_ENABLING_DIAGNOSTIC_REPORTING
               value: "true"
             - name: CACHE
-              values: 256MB
+              value: 256MB
             - name: MAX_SQL_MEMORY
-              values: 256MB
+              value: 256MB
           ports:
             - containerPort: 26257
               name: sql
