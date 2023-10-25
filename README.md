@@ -27,7 +27,6 @@ For this two environment variables have been added `COCKROACH_INIT_HOST` and `CO
 
 There are sensible defaults for these environment variables to ensure that a single cluster within a namespace can be brought up without overriding any environment variables. 
 
-An example of a cluster that is deployed using the features described in this section is available in the [examples/multi-cluster](./examples/multi-cluster) directory. 
 
 ### Versioning
 
