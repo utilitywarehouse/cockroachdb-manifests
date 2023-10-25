@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-backup-init
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: init-certs
+        env:
+        - name: CA_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ca.auth.keys
+              key: cluster1.auth.key
+      containers:
+      - name: backup-init
+        env:
+        - name: BACKUP_SCHEDULE
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: schedule
+        - name: BACKUP_DESTINATION_URL
+          valueFrom:
+            configMapKeyRef:
+              name: cockroach.backup.config
+              key: destination.url
+        - name: COCKROACH_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: cockroach.host
+              name: cockroach
+        - name: COCKROACH_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: cockroach.port
+              name: cockroach
+        

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: &app cockroachdb
+spec:
+  replicas: 3
+  template:
+    metadata:
+      annotations:
+        injector.tumblr.com/request: vault-sidecar-aws
+    spec:
+      initContainers:
+        - name: init-certs
+          env:
+          - name: CA_AUTH_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ca.auth.keys
+                key: cluster1.auth.key
+      containers:
+        - name: cockroachdb
+          env:
+          - name: COCKROACH_JOIN_STRING
+            value: cockroachdb-cluster1-0.cockroachdb-cluster1:26257,cockroachdb-cluster1-0.cockroachdb-cluster1:26357,cockroachdb-cluster1-1.cockroachdb-cluster1:26257,cockroachdb-cluster1-1.cockroachdb-cluster1:26357,cockroachdb-cluster1-2.cockroachdb-cluster1:26257,cockroachdb-cluster1-2.cockroachdb-cluster1:26357
+          resources:
+            requests:
+              cpu: 0.5
+              memory: "2Gi"
+            limits:
+              cpu: 2
+              memory: "4Gi"
+        - name: certs-refresh
+          env: 
+          - name: CA_AUTH_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ca.auth.keys
+                key: cluster1.auth.key
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "100Gi"

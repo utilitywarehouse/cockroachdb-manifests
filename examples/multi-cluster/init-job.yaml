@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-init
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: init-certs
+        env:
+        - name: CA_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ca.auth.keys
+              key: cluster1.auth.key
+      containers:
+      - name: cluster-init
+        env:
+        - name: COCKROACH_INIT_HOST
+          value: cockroachdb-cluster1-0.cockroachdb-cluster1
