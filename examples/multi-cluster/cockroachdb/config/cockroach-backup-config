@@ -1,0 +1,2 @@
+destination.url=s3://your-bucket-here/cockroachdb/?AUTH=implicit
+schedule=0 0,12 * * *

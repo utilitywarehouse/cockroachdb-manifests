@@ -1,0 +1,70 @@
+{
+  "signing": {
+    "default": {
+      "auth_key": "unused",
+      "expiry": "1h"
+    },
+    "profiles": {
+      "client": {
+        "expiry": "%%%EXPIRY_CLIENT_HOURS%%%h",
+        "usages": [
+          "critical",
+          "digital signature",
+          "key encipherment",
+          "client auth",
+          "signing"
+        ],
+        "auth_key": "client"
+      },
+      "client-server": {
+        "expiry": "%%%EXPIRY_SERVER_HOURS%%%h",
+        "usages": [
+          "critical",
+          "digital signature",
+          "key encipherment",
+          "server auth",
+          "client auth",
+          "signing"
+        ],
+        "auth_key": "client"
+      },
+      "cluster1-client": {
+        "expiry": "%%%EXPIRY_CLIENT_HOURS%%%h",
+        "usages": [
+          "critical",
+          "digital signature",
+          "key encipherment",
+          "client auth",
+          "signing"
+        ],
+        "auth_key": "cluster1-client"
+      },
+      "cluster1-client-server": {
+        "expiry": "%%%EXPIRY_SERVER_HOURS%%%h",
+        "usages": [
+          "critical",
+          "digital signature",
+          "key encipherment",
+          "server auth",
+          "client auth",
+          "signing"
+        ],
+        "auth_key": "cluster1-client"
+      }
+    }
+  },
+  "auth_keys": {
+    "client": {
+      "type": "standard",
+      "key": "%%%AUTH_KEY%%%"
+    },
+    "cluster1-client": {
+      "type": "standard",
+      "key": "%%%CLUSTER1_AUTH_KEY%%%"
+    },
+    "unused": {
+      "type": "standard",
+      "key": "%%%RANDOM_KEY%%%"
+    }
+  }
+}
