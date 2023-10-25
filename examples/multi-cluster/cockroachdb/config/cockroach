@@ -1,3 +1,0 @@
-cockroach.host=cockroach-db-proxy-cluster1.energy-platform.svc
-cockroach.port=26257
-cockroach.address=cockroachdb-proxy-cluster1.energy-platform.svc:26257

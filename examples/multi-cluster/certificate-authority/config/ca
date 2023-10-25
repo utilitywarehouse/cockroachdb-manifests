@@ -1,5 +1,0 @@
-ca.node.profile=cluster1-client-server
-ca.client.profile=cluster1-client
-ca.endpoint=certificate-authority-energy-platform.energy-platform:8080
-ca.serverCert.expiryHours=24
-ca.clientCert.expiryHours=24
