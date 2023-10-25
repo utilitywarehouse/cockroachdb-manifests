@@ -8,7 +8,25 @@ securing communication between nodes and clients.
 
 To deploy a cockroachdb cluster in your namespace you will need to complete the following steps:
 1. Configure and Deploy a Certificate Authority by following the [readme](./CFSSL_README.md). This will secure access for your cockroach cluster and clients.
-2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples](./examples/) folder that can be used as a starting point. By filling in the missing pieces (e.g. certs, backup config, etc) you should get a running CA and CRDB cluster with periodic backups to S3 and AWS creds injected via [vault](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md) (assumes an existing vault setup).
+2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples/single-cluster](./examples/single-cluster/) folder that can be used as a starting point. By filling in the missing pieces (e.g. certs, backup config, etc) you should get a running CA and CRDB cluster with periodic backups to S3 and AWS creds injected via [vault](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md) (assumes an existing vault setup).
+
+### Single namespace - multiple CockroachDB clusters
+
+While the preference is to have a single CockroachDB cluster per namespace, in some cases this isn't ideal. 
+
+An example of this is in the Energy team where they have recently split into three squads but currently still share use of the `energy-platform` namespace. 
+
+In order to deploy multiple CockroachDB clusters within a single namespace whilst avoiding naming conflicts we can make use of the `namePrefix` and/or `nameSuffix` ability of Kustomize. 
+This will automagically update the names of resources within a Kustomization as well as the selectors and labels. 
+
+One part of this that Kustomize is not able to help with is with the CockroachDB specific commands that are used to create and join nodes to the cluster. 
+For this two environment variables have been added `COCKROACH_INIT_HOST` and `COCKROACH_JOIN_STRING`. 
+
+- `COCKROACH_INIT_HOST` is used by the `init-job.yaml` manifest to initialise the first node in the cluster
+- `COCKROACH_JOIN_STRING` is in the `statefulset.yaml` manifest to define which nodes will be joining the cluster. 
+
+There are sensible defaults for these environment variables to ensure that a single cluster within a namespace can be brought up without overriding any environment variables. 
+
 
 ### Versioning
 

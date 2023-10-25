@@ -97,7 +97,7 @@ spec:
               --sql-addr=:26257
               --advertise-addr $(hostname -f)
               --http-addr 0.0.0.0
-              --join cockroachdb-0.cockroachdb:26257,cockroachdb-0.cockroachdb:26357,cockroachdb-1.cockroachdb:26257,cockroachdb-1.cockroachdb:26357,cockroachdb-2.cockroachdb:26257,cockroachdb-2.cockroachdb:26357
+              --join $(COCKROACH_JOIN_STRING)
               --cache $(CACHE)
               --max-sql-memory $(MAX_SQL_MEMORY)
           env:
@@ -109,6 +109,8 @@ spec:
               value: 256MB
             - name: MAX_SQL_MEMORY
               value: 256MB
+            - name: COCKROACH_JOIN_STRING
+              value: cockroachdb-0.cockroachdb:26257,cockroachdb-0.cockroachdb:26357,cockroachdb-1.cockroachdb:26257,cockroachdb-1.cockroachdb:26357,cockroachdb-2.cockroachdb:26257,cockroachdb-2.cockroachdb:26357
           ports:
             - containerPort: 26257
               name: sql
