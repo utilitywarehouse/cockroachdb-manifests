@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: cockroachdb
+  name: &app cockroachdb
   labels:
-    app: cockroachdb
+    app: *app
   annotations:
     "app.uw.systems/description": "Used to store data projections of events in multiple services."
     "app.uw.systems/tier": "tier_1"
@@ -13,11 +13,11 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cockroachdb
+      app: *app
   template:
     metadata:
       labels:
-        app: cockroachdb
+        app: *app
         policy.semaphore.uw.io/name: cockroachdb
     spec:
       serviceAccountName: cockroachdb
@@ -35,7 +35,7 @@ spec:
                     - key: app
                       operator: In
                       values:
-                        - cockroachdb
+                        - *app
                 topologyKey: kubernetes.io/hostname
       initContainers:
         - name: init-certs
