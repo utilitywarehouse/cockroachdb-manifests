@@ -44,7 +44,7 @@ spec:
   - port: 26257
     targetPort: 26257
     name: sql
-  - port: 26257
+  - port: 26357
     targetPort: 26357
     name: rpc
   - port: 8001
