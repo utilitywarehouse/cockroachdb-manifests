@@ -123,14 +123,14 @@ spec:
               path: "/health"
               port: http
               scheme: HTTPS
-            initialDelaySeconds: 30
+            initialDelaySeconds: 300
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: "/health?ready=1"
               port: http
               scheme: HTTPS
-            initialDelaySeconds: 60
+            initialDelaySeconds: 600
             periodSeconds: 5
             failureThreshold: 2
           volumeMounts:
