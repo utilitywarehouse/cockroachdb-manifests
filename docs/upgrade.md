@@ -68,9 +68,10 @@ After that has been merged, a new release can be created. Note that the tagging 
 <cockroach-version>-<manifests-version-number>
 ```
 
-That is to say, when CockroachDB `v22.1.0` is released, a tag will be created named `v22.1.0-0`. If we make further 
-changes to the manifests, but no CockroachDB version change is made, we may create a new tag named `v22.1.0-1`. You
-should typically look to use the most recent tag pertaining to the CockroachDB version you are targeting. Due to the
+That is to say, when CockroachDB `v22.1.0` is released, a tag will be created named `v22.1.0-1`. If we make further
+changes to the manifests, but no CockroachDB version change is made, we may create a new tag named `v22.1.0-2`.
+(Release count starts at 1, similarly to other UW repositories.)
+You should typically look to use the most recent tag pertaining to the CockroachDB version you are targeting. Due to the
 nature of these manifests, you should review any changes between the current and target tag. One convenient way to do 
 this is via
 
