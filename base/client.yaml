@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: &app cockroachdb-client
+  annotations:
+    "app.uw.systems/description": "Used to connect and query the cockroachdb databases."
+    "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
+    "app.uw.systems/tier": "tier_4"
 spec:
   replicas: 1
   selector:
