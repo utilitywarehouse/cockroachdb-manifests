@@ -6,6 +6,7 @@ metadata:
     "app.uw.systems/description": "Used to connect and query the cockroachdb databases."
     "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
     "app.uw.systems/tier": "tier_4"
+    "app.uw.systems/tags.oss": "true"
 spec:
   replicas: 1
   selector:
