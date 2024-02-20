@@ -8,6 +8,7 @@ metadata:
     "app.uw.systems/description": "Used to store data projections of events in multiple services."
     "app.uw.systems/tier": "tier_1"
     "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
+    "app.uw.systems/tags.oss": "true"
 spec:
   serviceName: cockroachdb
   replicas: 3
