@@ -238,6 +238,7 @@ one version between the current and target version, you need to upgrade one vers
 CockroachDB produce upgrade guides for each major version change. The relevant version should be reviewed before 
 proceeding:
 
+- 23.1 to 23.2: https://www.cockroachlabs.com/docs/v23.2/upgrade-cockroach-version
 - 22.2 to 23.1: https://www.cockroachlabs.com/docs/v23.1/upgrade-cockroach-version.html
 - 22.1 to 22.2: https://www.cockroachlabs.com/docs/v22.2/upgrade-cockroach-version.html
 - 21.2 to 22.1: https://www.cockroachlabs.com/docs/v22.1/upgrade-cockroach-version.html
