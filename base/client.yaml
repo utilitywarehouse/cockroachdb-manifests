@@ -19,35 +19,6 @@ spec:
         app: *app
     spec:
       terminationGracePeriodSeconds: 60
-      initContainers:
-        - name: init-certs
-          image: cockroach-cfssl-certs
-          command: ["cockroach-certs"]
-          env:
-            - name: CERTIFICATE_TYPE
-              value: "client"
-            - name: USER
-              value: "root"
-            - name: CERTS_DIR
-              value: "/cockroach-certs"
-            - name: CA_PROFILE
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.node.profile
-            - name: CA_ADDRESS
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.endpoint
-            - name: CA_AUTH_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ca.auth
-                  key: key
-          volumeMounts:
-            - name: client-certs
-              mountPath: /cockroach-certs
       containers:
         - name: cockroachdb-client
           image: cockroachdb
@@ -71,7 +42,7 @@ spec:
                   name: cockroach
                   key: cockroach.port
             - name: COCKROACH_CERTS_DIR
-              value: "/cockroach-certs"
+              value: "/cockroach/cockroach-certs"
           resources:
             requests:
               cpu: 0m
@@ -81,37 +52,9 @@ spec:
               memory: 512Mi
           volumeMounts:
             - name: client-certs
-              mountPath: /cockroach-certs
-        - name: certs-refresh
-          image: cockroach-cfssl-certs
-          command: ["cockroach-certs", "refresh"]
-          env:
-            - name: CERTIFICATE_TYPE
-              value: "client"
-            - name: USER
-              value: "root"
-            - name: CERTS_DIR
-              value: "/cockroach-certs"
-            - name: TARGET_PROC_COMMAND
-              value: ""
-            - name: CA_PROFILE
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.node.profile
-            - name: CA_ADDRESS
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.endpoint
-            - name: CA_AUTH_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ca.auth
-                  key: key
-          volumeMounts:
-            - name: client-certs
-              mountPath: /cockroach-certs
+              mountPath: /cockroach/cockroach-certs
       volumes:
         - name: client-certs
-          emptyDir: { }
+          secret:
+            secretName: cockroachdb.client.root
+            defaultMode: 256

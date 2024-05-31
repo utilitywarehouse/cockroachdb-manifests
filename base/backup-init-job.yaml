@@ -7,83 +7,53 @@ spec:
   backoffLimit: 10
   template:
     spec:
-      initContainers:
-      - name: init-certs
-        image: cockroach-cfssl-certs
-        imagePullPolicy: Always
-        command: ["cockroach-certs"]
-        env:
-        - name: CERTIFICATE_TYPE
-          value: "client"
-        - name: USER
-          value: "root"
-        - name: CERTS_DIR
-          value: "/cockroach-certs"
-        - name: CA_PROFILE
-          valueFrom:
-            configMapKeyRef:
-              name: ca.config
-              key: ca.client.profile
-        - name: CA_ADDRESS
-          valueFrom:
-            configMapKeyRef:
-              name: ca.config
-              key: ca.endpoint
-        - name: CA_AUTH_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ca.auth
-              key: key
-        volumeMounts:
-        - name: client-certs
-          mountPath: /cockroach-certs
       containers:
-      - name: backup-init
-        image: cockroachdb
-        imagePullPolicy: IfNotPresent
-        command:
-        - "/bin/bash"
-        - "/opt/scripts/backup-bootstrap.sh"
-        env:
-        - name: COCKROACH_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: cockroach
-              key: cockroach.host
-        - name: COCKROACH_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: cockroach
-              key: cockroach.port
-        - name: COCKROACH_CERTS_DIR
-          value: "/cockroach-certs/"
-        - name: BACKUP_SCHEDULE
-          valueFrom:
-            configMapKeyRef:
-              name: cockroach.backup.config
-              key: schedule
-        - name: BACKUP_DESTINATION_URL
-          valueFrom:
-            configMapKeyRef:
-              name: cockroach.backup.config
-              key: destination.url
-        volumeMounts:
-        - name: client-certs
-          mountPath: /cockroach-certs
-        - name: cockroachdb-scripts
-          mountPath: /opt/scripts
-          readOnly: true
-        resources:
-          requests:
-            cpu: 0
-            memory: 128Mi
-          limits:
-            cpu: 1 
-            memory: 512Mi
+        - name: backup-init
+          image: cockroachdb
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/bash"
+            - "/opt/scripts/backup-bootstrap.sh"
+          env:
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
+            - name: COCKROACH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.port
+            - name: COCKROACH_CERTS_DIR
+              value: "/cockroach-certs/"
+            - name: BACKUP_SCHEDULE
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach.backup.config
+                  key: schedule
+            - name: BACKUP_DESTINATION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach.backup.config
+                  key: destination.url
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach-certs
+            - name: cockroachdb-scripts
+              mountPath: /opt/scripts
+              readOnly: true
+          resources:
+            requests:
+              cpu: 0
+              memory: 128Mi
+            limits:
+              cpu: 1
+              memory: 512Mi
       restartPolicy: OnFailure
       volumes:
-      - name: client-certs
-        emptyDir: {}
-      - name: cockroachdb-scripts
-        configMap:
-          name: cockroachdb-scripts
+        - name: client-certs
+          emptyDir: {}
+        - name: cockroachdb-scripts
+          configMap:
+            name: cockroachdb-scripts
