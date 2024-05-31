@@ -19,9 +19,9 @@ spec:
               memory: "2Gi"
           env:
             - name: CACHE
-              values: 256MB
+              value: 256MB
             - name: MAX_SQL_MEMORY
-              values: 256MB
+              value: 256MB
   volumeClaimTemplates:
     - metadata:
         name: datadir
