@@ -23,9 +23,6 @@ spec:
   template:
     spec:
       volumes:
-        - name: datadir
-          persistentVolumeClaim:
-            claimName: datadir
         - name: certs
           secret:
             $patch: delete

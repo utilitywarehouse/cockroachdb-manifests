@@ -1,14 +1,10 @@
 # cockroachdb-manifests
 
-This is a Kustomization base for deploying CockroachDB to a Kubernetes cluster. The base depends on Cloudflare's
-[cfssl](https://github.com/cloudflare/cfssl) as a Certificate Authority for signing certificates for
-securing communication between nodes and clients.
+This is a Kustomization base for deploying CockroachDB to a Kubernetes cluster. The base depends on [cert-manager](https://github.com/cert-manager/cert-manager) for generating and renewing certificates to secure communication between nodes and clients.
 
 ## Deployment
 
-To deploy a cockroachdb cluster in your namespace you will need to complete the following steps:
-1. Configure and Deploy a Certificate Authority by following the [readme](./CFSSL_README.md). This will secure access for your cockroach cluster and clients.
-2. Setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples/single-cluster](./examples/single-cluster/) folder that can be used as a starting point. By filling in the missing pieces (e.g. certs, backup config, etc) you should get a running CA and CRDB cluster with periodic backups to S3 and AWS creds injected via [vault](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md) (assumes an existing vault setup).
+To deploy a cockroachdb cluster in your namespace you will need to setup a `kustomization.yaml` file that will use the bases defined here with your own configuration layered over the top. There is an [examples](./examples/) folder that can be used as a starting point. By filling in the missing pieces (e.g. certs, backup config, etc) you should get a running CRDB cluster with periodic backups to S3 and AWS creds injected via [vault](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md) (assumes an existing vault setup).
 
 ### Single namespace - multiple CockroachDB clusters
 
@@ -41,16 +37,6 @@ example: `v23.1.10-2` is the 2nd internal version of these manifests supporting
 `cockroachdb/cockroachv:23.1.10`
 
 ### Configuration
-The Certificate Authority is configured by a config map. This specifies the cfssl certificate authority
-API endpoint and the profile used to sign client and peer certificates. These profiles must match the
-cfssl configuration.
-Example:
-```
-ca.node.profile=server
-ca.client.profile=client
-ca.endpoint=certificate-authority:8080
-```
-The auth key to sign the certificate is passed in as a secret.
 Cockroach DB requires some base configuration that can be overridden. (An example is below)
 - Note: `cockroach.host` and `cockroach.port` are required by the backup job.
 ```
