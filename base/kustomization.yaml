@@ -7,6 +7,7 @@ images:
     newTag: v23.2.2
 
 resources:
+  - certificates.yaml
   - client.yaml
   - service.yaml
   - statefulset.yaml
