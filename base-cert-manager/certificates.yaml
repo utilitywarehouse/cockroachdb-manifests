@@ -39,6 +39,8 @@ spec:
     kind: Issuer
   commonName: node
   dnsNames:
+    - 127.0.0.1
+    - localhost
     - cockroachdb-0.cockroachdb
     - cockroachdb-1.cockroachdb
     - cockroachdb-2.cockroachdb
