@@ -1,0 +1,43 @@
+{
+  "signing": {
+    "default": {
+      "auth_key": "unused",
+      "expiry": "1h"
+    },
+    "profiles": {
+      "client": {
+        "expiry": "%%%EXPIRY_CLIENT_HOURS%%%h",
+        "usages": [
+          "critical",
+          "digital signature",
+          "key encipherment",
+          "client auth",
+          "signing"
+        ],
+        "auth_key": "client"
+      },
+      "client-server": {
+        "expiry": "%%%EXPIRY_SERVER_HOURS%%%h",
+        "usages": [
+          "critical",
+          "digital signature",
+          "key encipherment",
+          "server auth",
+          "client auth",
+          "signing"
+        ],
+        "auth_key": "client"
+      }
+    }
+  },
+  "auth_keys": {
+    "client": {
+      "type": "standard",
+      "key": "%%%AUTH_KEY%%%"
+    },
+    "unused": {
+      "type": "standard",
+      "key": "%%%RANDOM_KEY%%%"
+    }
+  }
+}

@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "false"
+    uw.health.aggregator.enable: "false"
+  name: certificate-authority
+  labels:
+    app: certificate-authority
+spec:
+  selector:
+    app: certificate-authority
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificate-authority
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: certificate-authority
+  template:
+    metadata:
+      name: certificate-authority
+      labels:
+        app: certificate-authority
+    spec:
+      initContainers:
+        - name: init-config
+          image: busybox:1.29.3
+          imagePullPolicy: IfNotPresent
+          command:
+            - "sh"
+            - "/scripts/make-config.sh"
+          env:
+            - name: AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ca.auth
+                  key: key
+            - name: EXPIRY_CLIENT_HOURS
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.clientCert.expiryHours
+            - name: EXPIRY_SERVER_HOURS
+              valueFrom:
+                configMapKeyRef:
+                  name: ca.config
+                  key: ca.serverCert.expiryHours
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: scripts
+              mountPath: /scripts
+
+      containers:
+        - name: certificate-authority
+          image: cfssl/cfssl:latest
+          imagePullPolicy: Always
+          command:
+            - "cfssl"
+            - "serve"
+            - "-address=0.0.0.0"
+            - "-port=8080"
+            - "-config=/config/config.json"
+            - "-ca=/certs/ca.pem"
+            - "-ca-key=/certs/ca-key.pem"
+            - "-loglevel=2"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: certs
+              mountPath: /certs
+          ports:
+            - containerPort: 8080
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /api/v1/cfssl/health
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /api/v1/cfssl/health
+              port: 8080
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: scripts
+          configMap:
+            name: certificate-authority-config
+        - name: certs
+          secret:
+            secretName: ca-certs

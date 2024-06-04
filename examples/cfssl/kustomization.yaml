@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+secretGenerator:
+  - name: ca.auth
+    envs:
+      - secrets/ca-auth-key
+  - name: ca-certs
+    files:
+      - ca-key.pem=secrets/ca-certs-ca-key.pem
+      - ca.pem=secrets/ca-certs-ca.pem
+configMapGenerator:
+  - name: ca.config
+    envs:
+      - config/ca-config
+  - name: cockroach
+    envs:
+      - config/cockroach
+  - name: cockroach.backup.config
+    envs:
+      - config/backup-config
+  - name: certificate-authority-config
+    files:
+      - make-config.sh=config/certificate-authority-config-make-config.sh
+      - config-template.json=config/certificate-authority-config-config-template.json
+resources:
+  - certificate-authority.yaml
+  - sa.yaml
+  - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v23.2.2-1
+
+patchesStrategicMerge:
+  - cockroach.yaml

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cockroachdb
+  namespace: <your namespace here>
+  annotations:
+    vault.uw.systems/aws-role: <your aws role here>
