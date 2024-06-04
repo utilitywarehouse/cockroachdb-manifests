@@ -7,6 +7,7 @@ metadata:
     "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
     "app.uw.systems/tier": "tier_4"
     "app.uw.systems/tags.oss": "true"
+    "secret.reloader.stakater.com/reload": "cockroachdb-ca, cockroachdb.client.root, cockroachdb.node"
 spec:
   replicas: 1
   selector:
