@@ -114,4 +114,4 @@ spec:
               mountPath: /cockroach-certs
       volumes:
         - name: client-certs
-          emptyDir: {}
+          emptyDir: { }
