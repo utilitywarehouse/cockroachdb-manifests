@@ -43,6 +43,9 @@ spec:
     - cockroachdb-1.cockroachdb
     - cockroachdb-2.cockroachdb
   secretName: cockroachdb.node
+  usages:
+    - server auth
+    - client auth
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -54,3 +57,5 @@ spec:
     kind: Issuer
   commonName: root
   secretName: cockroachdb.client.root
+  usages:
+    - client auth
