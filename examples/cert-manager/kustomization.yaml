@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - sa.yaml
-  - github.com/utilitywarehouse/cockroachdb-manifests//base?ref=v23.2.2-1
+  - github.com/utilitywarehouse/cockroachdb-manifests//base-cert-manager?ref=v23.2.2-1
 
 patches:
   - path: certificates-patch.yaml

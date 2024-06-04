@@ -5,11 +5,9 @@ images:
   - name: cockroachdb
     newName: cockroachdb/cockroach
     newTag: v23.2.2
-  - name: cockroach-cfssl-certs
-    newName: quay.io/utilitywarehouse/cockroach-cfssl-certs
-    newTag: latest
 
 resources:
+  - certificates.yaml
   - client.yaml
   - service.yaml
   - statefulset.yaml

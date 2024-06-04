@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-init
+  labels:
+    app: cockroachdb
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      containers:
+        - name: cluster-init
+          image: cockroachdb
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach/cockroach-certs
+          env:
+            - name: COCKROACH_INIT_HOST
+              value: cockroachdb-0.cockroachdb
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "/cockroach/cockroach init --certs-dir=/cockroach/cockroach-certs --host=$(COCKROACH_INIT_HOST) --port=26357 2>&1 | grep 'initialized'"
+          resources:
+            requests:
+              cpu: 0
+              memory: 128Mi
+            limits:
+              cpu: 1
+              memory: 512Mi
+      restartPolicy: OnFailure
+      volumes:
+        - name: client-certs
+          secret:
+            secretName: cockroachdb.client.root
+            defaultMode: 256

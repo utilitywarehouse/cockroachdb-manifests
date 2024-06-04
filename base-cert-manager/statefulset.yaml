@@ -38,49 +38,6 @@ spec:
                       values:
                         - cockroachdb
                 topologyKey: kubernetes.io/hostname
-      initContainers:
-        - name: init-certs
-          image: cockroach-cfssl-certs
-          imagePullPolicy: Always
-          command:
-            - "sh"
-            - "-c"
-            - >
-              cockroach-certs
-              --host=localhost
-              --host=127.0.0.1
-              --host=$(hostname -f)
-              --host=$(hostname -f|cut -f 1-2 -d '.')
-              --host=$(COCKROACH_HOST)
-              --host=$(COCKROACH_HOST).$(hostname -f|cut -f 3- -d '.')
-          env:
-            - name: CERTIFICATE_TYPE
-              value: "node"
-            - name: CERTS_DIR
-              value: "/cockroach-certs"
-            - name: CA_PROFILE
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.node.profile
-            - name: CA_ADDRESS
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.endpoint
-            - name: CA_AUTH_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ca.auth
-                  key: key
-            - name: COCKROACH_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: cockroach
-                  key: cockroach.host
-          volumeMounts:
-            - name: certs
-              mountPath: /cockroach-certs
       containers:
         - name: cockroachdb
           image: cockroachdb
@@ -146,77 +103,14 @@ spec:
             limits:
               cpu: "4000m"
               memory: "1Gi"
-        - name: certs-refresh
-          image: cockroach-cfssl-certs
-          imagePullPolicy: Always
-          command:
-            - "sh"
-            - "-c"
-            - >
-              cockroach-certs
-              --host=localhost
-              --host=127.0.0.1
-              --host=$(hostname -f)
-              --host=$(hostname -f|cut -f 1-2 -d '.')
-              --host=$(COCKROACH_HOST)
-              --host=$(COCKROACH_HOST).$(hostname -f|cut -f 3- -d '.')
-              refresh-and-forward
-          env:
-            - name: HTTP_PORT
-              value: "8001"
-            - name: FORWARD_HOST
-              value: "localhost:8080"
-            - name: FORWARD_TIMEOUT
-              value: "4s"
-            - name: EXTRA_TIME
-              value: "60m"
-            - name: CERTIFICATE_TYPE
-              value: "node"
-            - name: CERTS_DIR
-              value: "/cockroach-certs"
-            - name: CA_PROFILE
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.node.profile
-            - name: CA_ADDRESS
-              valueFrom:
-                configMapKeyRef:
-                  name: ca.config
-                  key: ca.endpoint
-            - name: CA_AUTH_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ca.auth
-                  key: key
-            - name: COCKROACH_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: cockroach
-                  key: cockroach.host
-          volumeMounts:
-            - name: certs
-              mountPath: /cockroach-certs
-          securityContext:
-            capabilities:
-              add:
-                - SYS_PTRACE
-          ports:
-            - containerPort: 8001
-              name: http
-          livenessProbe:
-            httpGet:
-              path: "/health"
-              port: http
-              scheme: HTTP
-            initialDelaySeconds: 40
-            periodSeconds: 30
       volumes:
         - name: datadir
           persistentVolumeClaim:
             claimName: datadir
         - name: certs
-          emptyDir: {}
+          secret:
+            secretName: cockroachdb.node
+            defaultMode: 256
   podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
