@@ -2,7 +2,7 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: selfsigned-issuer
+  name: cockroachdb-selfsigned-issuer
 spec:
   selfSigned: {}
 ---
@@ -17,7 +17,7 @@ spec:
     - cockroachdb-ca
   secretName: cockroachdb-ca
   issuerRef:
-    name: selfsigned-issuer
+    name: cockroachdb-selfsigned-issuer
     kind: Issuer
     group: cert-manager.io
 ---
