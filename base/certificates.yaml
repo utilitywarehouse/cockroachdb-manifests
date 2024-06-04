@@ -24,7 +24,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: ca-issuer
+  name: cockroachdb-ca-issuer
 spec:
   ca:
     secretName: cockroachdb-ca
@@ -35,7 +35,7 @@ metadata:
   name: node
 spec:
   issuerRef:
-    name: ca-issuer
+    name: cockroachdb-ca-issuer
     kind: Issuer
   commonName: node
   dnsNames:
