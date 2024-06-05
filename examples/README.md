@@ -1,1 +1,1 @@
-Please note that the `cfssl` manifests are no longer supported. We have moved on to using `cert-manager` for CockroachDB certificates.
+Please note that cfssl is deprecated and cert-manager is recommended.
