@@ -1,8 +1,7 @@
-# See GitHub's docs for more information on this file:
-# https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/configuration-options-for-dependency-updates
+
+# This file is does nothing and is only needed to make OpsLevel happy
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
