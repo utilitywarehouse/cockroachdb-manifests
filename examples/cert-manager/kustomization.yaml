@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - sa.yaml
+  - github.com/utilitywarehouse/cockroachdb-manifests//base-cert-manager?ref=v23.2.2-1
+
+patches:
+  - path: certificates-patch.yaml
+  - path: cockroach.yaml
+
+configMapGenerator:
+  - name: cockroach
+    envs:
+      - config/cockroach
+  - name: cockroach.backup.config
+    envs:
+      - config/backup-config

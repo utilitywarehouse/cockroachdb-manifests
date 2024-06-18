@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-backup-init
+spec:
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 10
+  template:
+    spec:
+      containers:
+        - name: backup-init
+          image: cockroachdb
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/bash"
+            - "/opt/scripts/backup-bootstrap.sh"
+          env:
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
+            - name: COCKROACH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.port
+            - name: COCKROACH_CERTS_DIR
+              value: "/cockroach-certs/"
+            - name: BACKUP_SCHEDULE
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach.backup.config
+                  key: schedule
+            - name: BACKUP_DESTINATION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach.backup.config
+                  key: destination.url
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach-certs
+            - name: cockroachdb-scripts
+              mountPath: /opt/scripts
+              readOnly: true
+          resources:
+            requests:
+              cpu: 0
+              memory: 128Mi
+            limits:
+              cpu: 1
+              memory: 512Mi
+      restartPolicy: OnFailure
+      volumes:
+        - name: client-certs
+          emptyDir: {}
+        - name: cockroachdb-scripts
+          configMap:
+            name: cockroachdb-scripts

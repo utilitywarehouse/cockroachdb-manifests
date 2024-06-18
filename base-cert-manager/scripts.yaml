@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cockroachdb-scripts
+data:
+  user-schema-bootstrap.sh: |
+    #!/bin/bash
+    set -e
+
+    if [ -z "$DB_USER" ]; then
+        echo "DB_USER envvar is not set"
+        exit 1
+    fi
+
+    if [ -z "$DB_NAME" ]; then
+        echo "DB_NAME envvar not set"
+        exit 1
+    fi
+
+    SQL_CMD="/cockroach/cockroach -d system sql" > /dev/null
+
+    $SQL_CMD << EOF
+      CREATE USER IF NOT EXISTS $DB_USER;
+      CREATE DATABASE IF NOT EXISTS $DB_NAME;
+      GRANT ALL ON DATABASE $DB_NAME TO $DB_USER;
+      GRANT ALL ON TABLE $DB_NAME.* TO $DB_USER;
+    EOF
+
+  backup-bootstrap.sh: |
+    #!/bin/bash
+    set -e
+
+    if [ -z "$BACKUP_SCHEDULE" ]; then
+        echo "BACKUP_SCHEDULE envvar is not set"
+        exit 1
+    fi
+
+    if [ -z "$BACKUP_DESTINATION_URL" ]; then
+        echo "BACKUP_DESTINATION_URL envvar is not set"
+        exit 1
+    fi
+
+    SQL_CMD="/cockroach/cockroach sql" > /dev/null
+
+    $SQL_CMD << EOF
+      BEGIN;
+      -- create a new schedule
+      CREATE SCHEDULE IF NOT EXISTS cluster_backup
+        FOR BACKUP INTO '$BACKUP_DESTINATION_URL'
+          RECURRING '$BACKUP_SCHEDULE'
+          FULL BACKUP ALWAYS
+          WITH SCHEDULE OPTIONS ignore_existing_backups;
+      COMMIT;
+    EOF

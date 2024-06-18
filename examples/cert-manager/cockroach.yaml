@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cockroachdb
+spec:
+  template:
+    metadata:
+      annotations:
+        uw.systems/kyverno-inject-sidecar-request: vault-sidecar-aws
+    spec:
+      containers:
+        - name: cockroachdb
+          resources:
+            requests:
+              cpu: 0
+              memory: "1Gi"
+            limits:
+              cpu: 4
+              memory: "2Gi"
+          env:
+            - name: CACHE
+              value: 256MB
+            - name: MAX_SQL_MEMORY
+              value: 256MB
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 50Gi

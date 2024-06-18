@@ -1,0 +1,63 @@
+# https://cert-manager.io/docs/configuration/selfsigned/#bootstrapping-ca-issuers
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cockroachdb-selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cockroachdb-ca
+spec:
+  isCA: true
+  commonName: cockroachdb-ca
+  dnsNames:
+    - cockroachdb-ca
+  secretName: cockroachdb-ca
+  issuerRef:
+    name: cockroachdb-selfsigned-issuer
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cockroachdb-ca-issuer
+spec:
+  ca:
+    secretName: cockroachdb-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: node
+spec:
+  issuerRef:
+    name: cockroachdb-ca-issuer
+    kind: Issuer
+  commonName: node
+  dnsNames:
+    - 127.0.0.1
+    - localhost
+    - cockroachdb-0.cockroachdb
+    - cockroachdb-1.cockroachdb
+    - cockroachdb-2.cockroachdb
+  secretName: cockroachdb.node
+  usages:
+    - server auth
+    - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: client
+spec:
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+  commonName: root
+  secretName: cockroachdb.client.root
+  usages:
+    - client auth

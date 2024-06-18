@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # This service is meant to be used by clients of the database. It exposes a ClusterIP that will
+  # automatically load balance connections to the different database pods.
+  name: cockroachdb-proxy
+  labels:
+    app: cockroachdb
+spec:
+  ports:
+  # The main port, serves Postgres-flavor SQL, for clients
+  - port: 26257
+    targetPort: 26257
+    name: sql
+  # The port used for node-node RPC connections
+  - port: 26357
+    targetPort: 26357
+    name: rpc
+  # UI as well as health and debug endpoints
+  - port: 8001
+    targetPort: 8001
+    name: http
+  selector:
+    app: cockroachdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # This service only exists to create DNS entries for each pod in the stateful
+  # set such that they can resolve each other's IP addresses. It does not
+  # create a load-balanced ClusterIP and should not be used directly by clients
+  # in most circumstances.
+  name: cockroachdb
+  labels:
+    app: cockroachdb
+  annotations:
+    # Enable automatic monitoring of all instances when Prometheus is running in the cluster.
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "_status/vars"
+    prometheus.io/port: "8001"
+    uw.health.aggregator.enable: "false"
+spec:
+  ports:
+  - port: 26257
+    targetPort: 26257
+    name: sql
+  - port: 26357
+    targetPort: 26357
+    name: rpc
+  - port: 8001
+    targetPort: 8001
+    name: http
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other CockroachDB pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  clusterIP: None
+  selector:
+    app: cockroachdb

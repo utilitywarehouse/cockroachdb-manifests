@@ -1,0 +1,89 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: node
+spec:
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+  commonName: node
+  dnsNames:
+    - cockroachdb-0.cockroachdb
+    - cockroachdb-1.cockroachdb
+    - cockroachdb-2.cockroachdb
+    - cockroachdb-0.cockroachdb.<your namespace here>.svc.cluster.local
+    - cockroachdb-1.cockroachdb.<your namespace here>.svc.cluster.local
+    - cockroachdb-2.cockroachdb.<your namespace here>.svc.cluster.local
+---
+# https://www.cockroachlabs.com/docs/stable/authentication#using-cockroach-cert-or-openssl-commands
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cockroachdb
+spec:
+  template:
+    spec:
+      volumes:
+        - name: certs
+          secret:
+            $patch: delete
+          projected:
+            sources:
+              - secret:
+                  name: cockroachdb.node
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+                    - key: tls.crt
+                      path: node.crt
+                    - key: tls.key
+                      path: node.key
+            defaultMode: 256
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-init
+spec:
+  template:
+    spec:
+      volumes:
+        - name: client-certs
+          secret:
+            $patch: delete
+          projected:
+            sources:
+              - secret:
+                  name: cockroachdb.client.root
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+                    - key: tls.crt
+                      path: client.root.crt
+                    - key: tls.key
+                      path: client.root.key
+            defaultMode: 256
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cockroachdb-client
+spec:
+  template:
+    spec:
+      volumes:
+        - name: client-certs
+          secret:
+            $patch: delete
+          projected:
+            sources:
+              - secret:
+                  name: cockroachdb.client.root
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+                    - key: tls.crt
+                      path: client.root.crt
+                    - key: tls.key
+                      path: client.root.key
+            defaultMode: 256

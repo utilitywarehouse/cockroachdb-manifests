@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: &app cockroachdb-client
+  annotations:
+    "app.uw.systems/description": "Used to connect and query the cockroachdb databases."
+    "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
+    "app.uw.systems/tier": "tier_4"
+    "app.uw.systems/tags.oss": "true"
+    "secret.reloader.stakater.com/reload": "cockroachdb.client.root"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: *app
+  template:
+    metadata:
+      name: *app
+      labels:
+        app: *app
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: cockroachdb-client
+          image: cockroachdb
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              sleep infinity & PID=$!
+              trap "kill $PID" TERM
+              wait
+              echo "shutting down..."
+          env:
+            - name: COCKROACH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.host
+            - name: COCKROACH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cockroach
+                  key: cockroach.port
+            - name: COCKROACH_CERTS_DIR
+              value: "/cockroach/cockroach-certs"
+          resources:
+            requests:
+              cpu: 0m
+              memory: 16Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach/cockroach-certs
+      volumes:
+        - name: client-certs
+          secret:
+            secretName: cockroachdb.client.root
+            defaultMode: 256

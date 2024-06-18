@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cockroachdb
+  labels:
+    app: cockroachdb
+  annotations:
+    "app.uw.systems/description": "Used to store data projections of events in multiple services."
+    "app.uw.systems/tier": "tier_1"
+    "app.uw.systems/repos.cockroachdb-manifests": "https://github.com/utilitywarehouse/cockroachdb-manifests"
+    "app.uw.systems/tags.oss": "true"
+    "secret.reloader.stakater.com/reload": "cockroachdb.node"
+spec:
+  serviceName: cockroachdb
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cockroachdb
+  template:
+    metadata:
+      labels:
+        app: cockroachdb
+        policy.semaphore.uw.io/name: cockroachdb
+    spec:
+      serviceAccountName: cockroachdb
+      shareProcessNamespace: true
+      # No pre-stop hook is required, a SIGTERM plus some time is all that's
+      # needed for graceful shutdown of a node.
+      terminationGracePeriodSeconds: 60
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - cockroachdb
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: cockroachdb
+          image: cockroachdb
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/bash"
+            - "-ecx"
+            # The use of qualified `hostname -f` is crucial:
+            # Other nodes aren't able to look up the unqualified hostname.
+            - >
+              exec /cockroach/cockroach start
+              --logtostderr=WARNING
+              --certs-dir /cockroach/cockroach-certs
+              --listen-addr=:26357
+              --sql-addr=:26257
+              --advertise-addr $(hostname -f)
+              --http-addr 0.0.0.0
+              --join $(COCKROACH_JOIN_STRING)
+              --cache $(CACHE)
+              --max-sql-memory $(MAX_SQL_MEMORY)
+          env:
+            - name: COCKROACH_CHANNEL
+              value: kubernetes-secure
+            - name: COCKROACH_SKIP_ENABLING_DIAGNOSTIC_REPORTING
+              value: "true"
+            - name: CACHE
+              value: 256MB
+            - name: MAX_SQL_MEMORY
+              value: 256MB
+            - name: COCKROACH_JOIN_STRING
+              value: cockroachdb-0.cockroachdb:26257,cockroachdb-0.cockroachdb:26357,cockroachdb-1.cockroachdb:26257,cockroachdb-1.cockroachdb:26357,cockroachdb-2.cockroachdb:26257,cockroachdb-2.cockroachdb:26357
+          ports:
+            - containerPort: 26257
+              name: sql
+            - containerPort: 26357
+              name: rpc
+            - containerPort: 8080
+              name: http
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: http
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: "/health?ready=1"
+              port: http
+              scheme: HTTPS
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 2
+          volumeMounts:
+            - name: datadir
+              mountPath: /cockroach/cockroach-data
+            - name: certs
+              mountPath: /cockroach/cockroach-certs
+          resources:
+            requests:
+              cpu: "0m"
+              memory: "768Mi"
+            limits:
+              cpu: "4000m"
+              memory: "1Gi"
+      volumes:
+        - name: datadir
+          persistentVolumeClaim:
+            claimName: datadir
+        - name: certs
+          secret:
+            secretName: cockroachdb.node
+            defaultMode: 256
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 10Gi

@@ -1,0 +1,2 @@
+cockroach.host=cockroachdb-proxy
+cockroach.port=26257
