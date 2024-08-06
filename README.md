@@ -1,4 +1,4 @@
-**This repository is in progress of being moved to [shared-kustomize-bases](https://github.com/utilitywarehouse/shared-kustomize-bases)**
+**CockroachDB manifests are moved to [shared-kustomize-bases](https://github.com/utilitywarehouse/shared-kustomize-bases/tree/main/cockroachdb)**
 
 # cockroachdb-manifests
 
