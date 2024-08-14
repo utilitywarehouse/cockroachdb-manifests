@@ -1,5 +1,11 @@
 **CockroachDB manifests are moved to [shared-kustomize-bases](https://github.com/utilitywarehouse/shared-kustomize-bases/tree/main/cockroachdb)**
 
+Please, do not contribute to this repository, and do not use
+it for the new Cockroach instances.
+
+It's not archived just to not break the OpsLevel integration for services using it.
+
+
 # cockroachdb-manifests
 
 This is a Kustomization base for deploying CockroachDB to a Kubernetes cluster. The base depends on [cert-manager](https://github.com/cert-manager/cert-manager) for generating and renewing certificates to secure communication between nodes and clients.
