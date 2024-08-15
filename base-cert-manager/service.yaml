@@ -17,8 +17,8 @@ spec:
     targetPort: 26357
     name: rpc
   # UI as well as health and debug endpoints
-  - port: 8001
-    targetPort: 8001
+  - port: 8080
+    targetPort: 8080
     name: http
   selector:
     app: cockroachdb
@@ -36,8 +36,9 @@ metadata:
   annotations:
     # Enable automatic monitoring of all instances when Prometheus is running in the cluster.
     prometheus.io/scrape: "true"
+    prometheus.io/scheme: "https"
+    prometheus.io/port: "8080"
     prometheus.io/path: "_status/vars"
-    prometheus.io/port: "8001"
     uw.health.aggregator.enable: "false"
 spec:
   ports:
@@ -47,8 +48,8 @@ spec:
   - port: 26357
     targetPort: 26357
     name: rpc
-  - port: 8001
-    targetPort: 8001
+  - port: 8080
+    targetPort: 8080
     name: http
   # We want all pods in the StatefulSet to have their addresses published for
   # the sake of the other CockroachDB pods even before they're ready, since they
