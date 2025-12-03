@@ -41,7 +41,6 @@ spec:
       initContainers:
         - name: init-certs
           image: cockroach-cfssl-certs
-          imagePullPolicy: Always
           command:
             - "sh"
             - "-c"
@@ -148,7 +147,6 @@ spec:
               memory: "1Gi"
         - name: certs-refresh
           image: cockroach-cfssl-certs
-          imagePullPolicy: Always
           command:
             - "sh"
             - "-c"

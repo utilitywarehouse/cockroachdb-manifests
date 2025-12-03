@@ -10,7 +10,6 @@ spec:
       initContainers:
       - name: init-certs
         image: cockroach-cfssl-certs
-        imagePullPolicy: Always
         command: ["cockroach-certs"]
         env:
         - name: CERTIFICATE_TYPE
