@@ -3,7 +3,6 @@ kind: Job
 metadata:
   name: cockroach-backup-init
 spec:
-  ttlSecondsAfterFinished: 600
   backoffLimit: 10
   template:
     spec:
