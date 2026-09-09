@@ -1,11 +1,3 @@
-**CockroachDB manifests are moved to [shared-kustomize-bases](https://github.com/utilitywarehouse/shared-kustomize-bases/tree/main/cockroachdb)**
-
-Please, do not contribute to this repository, and do not use
-it for the new Cockroach instances.
-
-It's not archived just to not break the OpsLevel integration for services using it.
-
-
 # cockroachdb-manifests
 
 This is a Kustomization base for deploying CockroachDB to a Kubernetes cluster. The base depends on [cert-manager](https://github.com/cert-manager/cert-manager) for generating and renewing certificates to secure communication between nodes and clients.
@@ -43,6 +35,37 @@ This repo uses tags to manage versions, these tags have two components:
 These tags are of the form `<cockroachdb-version>-<internal-version>`, for
 example: `v23.1.10-2` is the 2nd internal version of these manifests supporting
 `cockroachdb/cockroachv:23.1.10`
+
+### Dropping the init job TTL on an older tag
+
+Tags up to `v23.2.2-1` set `ttlSecondsAfterFinished: 600` on the
+`cockroach-init` and `cockroach-backup-init` jobs, so Kubernetes deletes them
+10 minutes after they finish. For Argo CD apps that manage the jobs this
+looks like drift: the completed jobs vanish and the app flaps OutOfSync until
+a sync recreates them. Newer tags remove the field entirely.
+
+If you are pinned to an older tag and cannot bump, drop the field in your own
+overlay with a kustomize patch:
+
+```yaml
+patches:
+  - target:
+      kind: Job
+      name: cockroach-init
+    patch: |-
+      - op: remove
+        path: /spec/ttlSecondsAfterFinished
+  - target:
+      kind: Job
+      name: cockroach-backup-init
+    patch: |-
+      - op: remove
+        path: /spec/ttlSecondsAfterFinished
+```
+
+With the TTL gone the jobs complete and persist, so Argo-managed namespaces
+stay in sync. The upgrade flow (delete the jobs before bumping the immutable
+Job template) is unchanged.
 
 ### Configuration
 Cockroach DB requires some base configuration that can be overridden. (An example is below)
